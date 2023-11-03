@@ -1,7 +1,4 @@
-#include <cstdint>
-
-using u8 = std::uint8_t;
-using u16 = std::uint16_t;
+#include "global.h"
 
 /**
  * @brief A register struct. Contains an 8-bit lower and upper register, 

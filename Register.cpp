@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "Register.h"
 
 struct Register
@@ -14,8 +12,5 @@ struct Register
     void setWord(u16 word) {
         higher = (u8) ((word & 0xFF00) >> 8); // mask to first 4 bits, shift right 8 bits.
         lower = (u8) (word & 0x00FF); // mask to only last 4 bits
-
-        // Debug
-        std::cout << "Word: " << word << " Higher: " << +higher << " Lower: " << +lower << std::endl;
     }
 };
