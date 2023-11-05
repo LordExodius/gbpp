@@ -2,7 +2,7 @@
 
 struct Register
 {
-    u8 lower;   
+    u8 lower;   ///< Lower 8-bits of the register pair.
     u8 higher;  ///< Higher 8-bits of the register pair.
 
     u16 getWord() {

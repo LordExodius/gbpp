@@ -1,6 +1,11 @@
 #include "Register.h"
 #include "MMU.h"
 
+#define ZERO_VALUE 0x8
+#define SUB_VALUE 0x4
+#define HALF_VALUE 0x2
+#define CARRY_VALUE 0x1
+
 class CPU
 {
 private:

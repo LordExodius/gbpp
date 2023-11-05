@@ -6,6 +6,14 @@
  */
 struct Register
 {
+    /*
+    Note: Because the Gameboy's architecture is little-endian, the least significant bytes come first.
+    I.e., given a 16-bit value, the bits would be in the following order:
+
+    Lower: 7 6 5 4 3 2 1 0
+    Higher: 15 14 13 11 10 9 8
+    */
+
     u8 lower;           ///< Lower 8-bits of the register pair.
     u8 higher;          ///< Higher 8-bits of the register pair.
 

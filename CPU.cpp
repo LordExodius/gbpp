@@ -21,10 +21,10 @@ CPU::~CPU() { }
 // Flag Operations
 
 bool CPU::getZeroFlag() { 
-    return (CPU::AF.lower & 0b0001) == 0b0001; 
+    return (CPU::AF.lower & ZERO_VALUE) == ZERO_VALUE; 
 }
 void CPU::setZeroFlag(bool set) {
-    CPU::AF.lower = set ? CPU::AF.lower | 0b0001 : CPU::AF.lower & 0b1110;
+    CPU::AF.lower = set ? CPU::AF.lower | ZERO_VALUE : CPU::AF.lower & ~ZERO_VALUE;
 }
 bool CPU::getSubFlag() {
     return (CPU::AF.lower & 0b0010) == 0b0010; 
