@@ -1,3 +1,5 @@
+#ifndef REGISTER_H_INCLUDED
+#define REGISTER_H_INCLUDED
 #include "global.h"
 
 /**
@@ -31,3 +33,5 @@ struct Register
      */
     void setWord(u16);
 };
+
+#endif

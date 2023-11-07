@@ -1,21 +1,22 @@
+#ifndef CPU_H_INCLUDED
+#define CPU_H_INCLUDED
 #include "Register.h"
-#include "MMU.h"
 
-#define ZERO_VALUE 0x8
-#define SUB_VALUE 0x4
-#define HALF_VALUE 0x2
-#define CARRY_VALUE 0x1
+#define ZERO_VALUE 0x80
+#define SUB_VALUE 0x40
+#define HALF_VALUE 0x20
+#define CARRY_VALUE 0x10
 
 class CPU
 {
 private:
     // Registers
-    static Register AF;    ///< `A` and `F` register pair (Accumulator and Flag registers).
-    static Register BC;    ///< `B` and `C` register pair ().
-    static Register DE;    ///< `D` and `E` register pair ().
-    static Register HL;    ///< `H` and `L` register pair.
-    static Register PC;    ///< Program Counter.
-    static Register SP;    ///< Stack Pointer.
+    Register AF;    ///< `A` and `F` register pair (Accumulator and Flag registers).
+    Register BC;    ///< `B` and `C` register pair ().
+    Register DE;    ///< `D` and `E` register pair ().
+    Register HL;    ///< `H` and `L` register pair.
+    Register PC;    ///< Program Counter.
+    Register SP;    ///< Stack Pointer.
 
 public:
     /**
@@ -38,11 +39,5 @@ public:
     void setHCarryFlag(bool);
     bool getCarryFlag();
     void setCarryFlag(bool);
-
-    u8 fetchOp(u16);
-    void decodeOp(u8);
-
-    // Debug
-    void resetRegisters();
-    void printRegisters();
 };
+#endif
