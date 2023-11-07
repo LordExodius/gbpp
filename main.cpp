@@ -12,9 +12,14 @@ void checkFlags(CPU cpu) {
 
 int main() {
     CPU cpu;
+
+    cpu.dumpRegisters();
+
     checkFlags(cpu);
     cpu.setZeroFlag(false);
     checkFlags(cpu);
     cpu.setSubFlag(true);
     checkFlags(cpu);
+
+    cpu.dumpRegisters();
 }

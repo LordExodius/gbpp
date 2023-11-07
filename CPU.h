@@ -39,5 +39,8 @@ public:
     void setHCarryFlag(bool);
     bool getCarryFlag();
     void setCarryFlag(bool);
+
+    // DEBUG
+    void dumpRegisters();
 };
 #endif

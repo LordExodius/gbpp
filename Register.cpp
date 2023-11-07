@@ -10,9 +10,12 @@ u16 Register::getWord() {
 }
 
 void Register::setWord(u16 word) {
-    std::cout << "word:" << std::hex << +word << "\n";
     higher = (u8) ((word & 0xFF00) >> 8); // mask to first 4 bits, shift right 8 bits.
-    std::cout << "higher:" << std::hex << +higher << "\n";
     lower = (u8) (word & 0x00FF); // mask to only last 4 bits
+
+    #if DEBUG == true
+    std::cout << "word:" << std::hex << +word << "\n";
+    std::cout << "higher:" << std::hex << +higher << "\n";
     std::cout << "lower:" << std::hex << +lower << "\n";
+    #endif
 }
