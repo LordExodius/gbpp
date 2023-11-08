@@ -16,11 +16,12 @@ bool Cartridge::loadCartridge(std::string gameFile) {
 
     if (!fp) {
         printf("Cannot open file.\n");
+        fclose(fp);
         return false;
     }
 
     // Determine file size
-    long fileSize = getFileSize(gameFile);
+    fileSize = getFileSize(gameFile);
     printf("File size: %ld bytes\n", fileSize);
 
     // Load ROM into memory
@@ -29,6 +30,8 @@ bool Cartridge::loadCartridge(std::string gameFile) {
 
     if (gameData == NULL) {
         printf("Unable to allocate memory.\n");
+        fclose(fp);
+        return false;
     }
 
     fclose(fp);
@@ -75,6 +78,15 @@ bool Cartridge::verifyChecksum() {
     }
     u8 storedChecksum = gameData[0x014D];
     return checksum == storedChecksum;
+}
+
+u8 Cartridge::getMemory(u16 address) {
+    if (address < fileSize) {
+        return gameData[address];
+    } else {
+        printf("Error: invalid memory address\n");
+        return 0;
+    }
 }
 
 Cartridge::~Cartridge() {
