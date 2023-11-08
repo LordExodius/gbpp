@@ -40,14 +40,7 @@ public:
     bool getCarryFlag();
     void setCarryFlag(bool);
 
-    void executeOpCodes(uint16_t opcode)
-    {
-        switch (opcode)
-        {
-            case 0x00:
-            // Do something
-        }
-    }
+    void executeOpCodes(uint16_t opcode);
 
     // DEBUG
     void dumpRegisters();

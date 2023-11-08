@@ -59,41 +59,245 @@ int CPU::ExecuteNextOpcode( )
    return res ;
 } 
 
-int CPU::ExecuteOpcode(BYTE opcode)
-{
-   switch(opcode)
-   {
-   case 0x06:
-   CPU_8BIT_LOAD(m_RegisterBC.hi) ;
-   return 8;
-
-   case 0x80:
-   CPU_8BIT_ADD(m_RegisterAF.hi, m_RegisterBC.hi,false,false) ;
-   return 4;
-
-   case 0x90:
-   CPU_8BIT_SUB(m_RegisterAF.hi, m_RegisterBC.hi,false,false) ;
-   return 4 ;
-
-   case 0xAF:
-   CPU_8BIT_XOR(m_RegisterAF.hi, m_RegisterAF.hi, false) ;
-   return 4;
-
-   case 0x20 :
-   CPU_JUMP_IMMEDIATE( true, FLAG_Z, false ) ;
-   return 8;
-
-   case 0xCC :
-   CPU_CALL( true, FLAG_Z, true) ;
-   case 0xD0:
-   CPU_RETURN( true, FLAG_C, false ) ;
-   return 8;
-
-   case 0xCB:
-   return ExecuteExtendedOpcode( ) ;
-
-   default:
-   assert(false); return 0 ;// unhandled opcode } 
+void executeOpCodes(uint16_t opcode){
+    switch (opcode)
+        {
+            case 0x80:
+                int result, carry_bit = AF.higher + BC.higher;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x81:
+                int result, carry_bit =AF.higher + BC.lower;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x82:
+                int result, carry_bit = AF.higher + DE.higher;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x83:
+                int result, carry_bit = AF.higher + DE.lower;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x84:
+                int result, carry_bit = AF.higher + HL.higher;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x85:
+                int result, carry_bit = AF.higher + HL.lower;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x86:
+                result, carry_bit = AF.higher + HL.getWord();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x87:
+                result, carry_bit = AF.higher + AF.higher;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x88:
+                result, carry_bit = AF.higher + BC.higher + CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x89:
+                result, carry_bit = AF.higher + BC.lower + CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x8A:
+                result, carry_bit = AF.higher + DE.higher + CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x8B:
+                result, carry_bit = AF.higher + DE.lower + CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x8C:
+                result, carry_bit = AF.higher + HL.higher + CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x8D:
+                result, carry_bit = AF.higher + HL.lower + CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+                break;
+            case 0x8E:
+                result, carry_bit = AF.higher + HL.getWord() + CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+            case 0x8F:
+                result, carry_bit = AF.higher + AF.lower() + CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(0);
+            case 0x90:
+                result, carry_bit = AF.higher - BC.higher;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x91:
+                result, carry_bit = AF.higher - BC.lower;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x92:
+                result, carry_bit = AF.higher - DE.higher;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x93:
+                result, carry_bit = AF.higher - DE.lower;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x94:
+                result, carry_bit = AF.higher - HL.higher;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x95:
+                result, carry_bit = AF.higher - HL.lower;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x96:
+                result, carry_bit = AF.higher - HL.getWord();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x97:
+                result, carry_bit = AF.higher - AF.higher;
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x98:
+                result, carry_bit = AF.higher - BC.higher - CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x99:
+                result, carry_bit = AF.higher - BC.lower - CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x9A:
+                result, carry_bit = AF.higher + DE.higher - CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x9B:
+                result, carry_bit = AF.higher + DE.lower - CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x9C:
+                result, carry_bit = AF.higher + HL.higher - CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x9D:
+                result, carry_bit = AF.higher + HL.lower - CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+                break;
+            case 0x9E:
+                result, carry_bit = AF.higher + HL.getWord() - CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+            case 0x9F:
+                result, carry_bit = AF.higher + AF.lower() - CPU::getCarryFlag();
+                AF.higher = result;
+                CPU::setZeroFlag(result==0);
+                CPU::setSubFlag(1);
+            case 0xA0:
+                AF.higher &= BC.higher;
+                break;
+            case 0xA1:
+                AF.higher = AF.higher and BC.lower;
+                break;
+            case 0xA2:
+                AF.higher = AF.higher - DE.higher;
+                break;
+            case 0xA3:
+                AF.higher = AF.higher - DE.lower;
+                break;
+            case 0xA4:
+                AF.higher = AF.higher - HL.higher;
+                break;
+            case 0xA5:
+                AF.higher = AF.higher - HL.lower;
+                break;
+            case 0xA6:
+                AF.higher = AF.higher - HL.getWord();
+                break;
+            case 0xA7:
+                AF.higher = AF.higher - AF.higher;
+                break;
+            case 0xA8:
+                AF.higher = AF.higher - BC.higher - CPU::getCarryFlag();
+                break;
+            case 0xA9:
+                AF.higher = AF.higher - BC.lower - CPU::getCarryFlag();
+                break;
+            case 0xAA:
+                AF.higher = AF.higher + DE.higher - CPU::getCarryFlag();
+                break;
+            case 0xAB:
+                AF.higher = AF.higher + DE.lower - CPU::getCarryFlag();
+                break;
+            case 0xAC:
+                AF.higher = AF.higher + HL.higher - CPU::getCarryFlag();
+                break;
+            case 0xAD:
+                AF.higher = AF.higher + HL.lower - CPU::getCarryFlag();
+                break;
+            case 0xAE:
+                AF.higher = AF.higher + HL.getWord() - CPU::getCarryFlag();
+            case 0xAF:
+                AF.higher = AF.higher + AF.lower() - CPU::getCarryFlag();
+        }
+}
 
 // DEBUG
 
