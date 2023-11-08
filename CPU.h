@@ -1,6 +1,7 @@
 #ifndef CPU_H_INCLUDED
 #define CPU_H_INCLUDED
 #include "Register.h"
+#include "MMU.h"
 
 #define ZERO_VALUE 0x80
 #define SUB_VALUE 0x40
@@ -18,11 +19,14 @@ private:
     Register PC;    ///< Program Counter.
     Register SP;    ///< Stack Pointer.
 
+    // Memory
+    MMU *mmu;
+
 public:
     /**
      * @brief Constructor for CPU object. Initializes register and timer values appropriately.
      */
-    CPU(/* args */);
+    CPU(MMU *mmu);
 
     /**
      * @brief Destroy the CPU::CPU object
@@ -30,7 +34,6 @@ public:
     ~CPU();
 
     // FLAGS
-
     bool getZeroFlag();
     void setZeroFlag(bool);
     bool getSubFlag();
