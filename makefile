@@ -1,8 +1,8 @@
 CXX=g++
 CXXFLAGS=--std=c++17
 
-DEPS = global.h CPU.h MMU.h Register.h
-OBJS = main.o CPU.o MMU.o Register.o
+DEPS = global.h CPU.h MMU.h Register.h Cartridge.h
+OBJS = main.o CPU.o MMU.o Register.o Cartridge.o
 
 # Build objects
 # $@ : Name of target being generated
