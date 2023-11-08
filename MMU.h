@@ -1,3 +1,6 @@
+#ifndef MMU_H
+#define MMU_H
+
 #include "global.h"
 
 class MMU
@@ -13,3 +16,5 @@ public:
     u16 readWord(u16 location);
     void writeWord(u16 location, u16 data);
 };
+
+#endif

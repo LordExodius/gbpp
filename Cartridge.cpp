@@ -23,11 +23,8 @@ bool Cartridge::loadCartridge(std::string gameFile) {
     long fileSize = getFileSize(gameFile);
     printf("File size: %ld bytes\n", fileSize);
 
-    // Checksum verification
-    // TODO
-
     // Load ROM into memory
-    gameData = new uint8_t[fileSize];
+    gameData = new u8[fileSize];
     fread(gameData, 1, fileSize, fp);
 
     if (gameData == NULL) {
@@ -42,6 +39,12 @@ bool Cartridge::loadCartridge(std::string gameFile) {
     printf("Cartridge Type: %d\n", header.cartridgeType);
     printf("License Code: 0x%04X\n", header.licenseCode);
 
+    // Checksum verification: false if corrupted ROM
+    if (!verifyChecksum()) {
+        printf("Checksum verification failed.\n");
+        return false;
+    }
+
     return true;
 }
 
@@ -50,7 +53,7 @@ long Cartridge::getFileSize(std::string gameFile) {
     return fileSize;
 }
 
-GBHeader Cartridge::getHeader(uint8_t *gameData) {
+GBHeader Cartridge::getHeader(u8 *gameData) {
     GBHeader header;
     
     // Header offset values
@@ -63,6 +66,15 @@ GBHeader Cartridge::getHeader(uint8_t *gameData) {
     header.licenseCode = gameData[licenseCodeOffset] | (gameData[licenseCodeOffset + 1] << 8);
 
     return header;
+}
+
+bool Cartridge::verifyChecksum() {
+    u8 checksum = 0;
+    for (u16 address = 0x0134; address <= 0x014C; address++) {
+        checksum = checksum - gameData[address] - 1;
+    }
+    u8 storedChecksum = gameData[0x014D];
+    return checksum == storedChecksum;
 }
 
 Cartridge::~Cartridge() {

@@ -2,19 +2,21 @@
 #define CARTRIDGE_H
 
 #include <string>
+#include "global.h"
 
 struct GBHeader {
     char title[16];
-    uint8_t cartridgeType;
-    uint16_t licenseCode;
+    u8 cartridgeType;
+    u16 licenseCode;
 };
 
 class Cartridge
 {
 private:
-    uint8_t *gameData;
+    u8 *gameData;
+    GBHeader getHeader(u8 *gameData);
     long getFileSize(std::string gameFile);
-    GBHeader getHeader(uint8_t *gameData);
+    bool verifyChecksum();
 public:
     Cartridge();
     ~Cartridge();
