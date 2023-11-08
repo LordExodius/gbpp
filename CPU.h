@@ -1,6 +1,7 @@
 #ifndef CPU_H_INCLUDED
 #define CPU_H_INCLUDED
 #include "Register.h"
+#include "MMU.h"
 
 #define ZERO_VALUE 0x80
 #define SUB_VALUE 0x40
@@ -17,6 +18,9 @@ private:
     Register HL;    ///< `H` and `L` register pair.
     Register PC;    ///< Program Counter.
     Register SP;    ///< Stack Pointer.
+
+    // Memory
+    MMU *mmu;
 
 public:
     /**
