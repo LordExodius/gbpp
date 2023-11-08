@@ -22,7 +22,7 @@ public:
     /**
      * @brief Constructor for CPU object. Initializes register and timer values appropriately.
      */
-    CPU(/* args */);
+    CPU(MMU *mmu);
 
     /**
      * @brief Destroy the CPU::CPU object
@@ -30,7 +30,6 @@ public:
     ~CPU();
 
     // FLAGS
-
     bool getZeroFlag();
     void setZeroFlag(bool);
     bool getSubFlag();

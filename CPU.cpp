@@ -8,8 +8,9 @@
 // Headers
 #include "global.h"
 #include "CPU.h"
+#include "MMU.h"
 
-CPU::CPU(/* args */)
+CPU::CPU(MMU *mmu)
 {
     // Init values from Pandocs for DMG Gameboy
     CPU::AF.setWord(0x01B0);

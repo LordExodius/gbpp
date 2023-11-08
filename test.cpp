@@ -12,7 +12,8 @@ void checkFlags(CPU cpu) {
 }
 
 int main() {
-    CPU cpu;
+    MMU mmu;
+    CPU cpu(&mmu);
     Cartridge cartridge;
     cartridge.loadCartridge("Pokemon.gb");
 
