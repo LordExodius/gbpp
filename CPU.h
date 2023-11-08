@@ -11,12 +11,12 @@ class CPU
 {
 private:
     // Registers
-    Register AF;    ///< `A` and `F` register pair (Accumulator and Flag registers).
-    Register BC;    ///< `B` and `C` register pair ().
-    Register DE;    ///< `D` and `E` register pair ().
-    Register HL;    ///< `H` and `L` register pair.
-    Register PC;    ///< Program Counter.
-    Register SP;    ///< Stack Pointer.
+    Register AF; ///< `A` and `F` register pair (Accumulator and Flag registers).
+    Register BC; ///< `B` and `C` register pair ().
+    Register DE; ///< `D` and `E` register pair ().
+    Register HL; ///< `H` and `L` register pair.
+    Register PC; ///< Program Counter.
+    Register SP; ///< Stack Pointer.
 
 public:
     /**
@@ -40,9 +40,14 @@ public:
     bool getCarryFlag();
     void setCarryFlag(bool);
 
-    // CPU Instructions
-    int ExecuteOpcode(BYTE opcode);
-    int ExecuteNextOpcode( );
+    void executeOpCodes(uint16_t opcode)
+    {
+        switch (opcode)
+        {
+            case 0x00:
+            // Do something
+        }
+    }
 
     // DEBUG
     void dumpRegisters();
