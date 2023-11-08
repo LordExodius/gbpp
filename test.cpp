@@ -39,4 +39,12 @@ int main(int argc, char *argv[]) {
     checkFlags(cpu);
 
     cpu.dumpRegisters();
+
+    printf("\nCan write a byte to memory:\n");
+    mmu.writeByte(0, 2);
+    printf("MMU Memory at 0x00: %d", mmu.readByte(0));
+
+    printf("\nCan write a word to memory:\n");
+    mmu.writeByte(0, 0xF);
+    printf("MMU Memory at 0x00: %d", mmu.readWord(0));
 }
