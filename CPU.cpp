@@ -9,8 +9,9 @@
 #include "global.h"
 #include "CPU.h"
 
-CPU::CPU(MMU *mmu)
+CPU::CPU(MMU* mmu)
 {
+    CPU::mmu = mmu;
     // Init values from Pandocs for DMG Gameboy
     CPU::AF.setWord(0x01B0);
     CPU::BC.setWord(0x0013);    

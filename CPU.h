@@ -31,6 +31,7 @@ private:
     Register PC;    ///< Program Counter.
     Register SP;    ///< Stack Pointer.
 
+    // Memory
     MMU *mmu;
 
 public:
@@ -47,7 +48,6 @@ public:
     ~CPU();
 
     // FLAGS
-
     bool getZeroFlag();
     void setZeroFlag(bool);
     bool getSubFlag();

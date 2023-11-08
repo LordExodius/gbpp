@@ -24,3 +24,6 @@ void MMU::writeWord(u16 location, u16 word) {
     writeByte(location, lower);
     writeByte(location + 1, higher);
 }
+
+MMU::~MMU() {
+}
