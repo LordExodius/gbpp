@@ -30,13 +30,31 @@ int main(int argc, char *argv[]) {
     MMU mmu;
     CPU cpu(&mmu);
 
+    // REGISTERS
+    printf("\nREGISTER TESTS\n");
+    printf("\nTest 3: CPU successfully initializes register values\n");
     cpu.dumpRegisters();
 
+    printf("\nTest 4: Register F is correctly partitioned into flags\n");
     checkFlags(cpu);
+
+    printf("\nTest 5.1: Zero flag can be fetched and set");
+    printf("\nZero: %d\n", cpu.getZeroFlag());
     cpu.setZeroFlag(false);
     checkFlags(cpu);
+
+    printf("\nTest 5.2: Subtraction flag can be fetched and set");
+    printf("\nSub: %d\n", cpu.getSubFlag());
     cpu.setSubFlag(true);
     checkFlags(cpu);
 
-    cpu.dumpRegisters();
+    printf("\nTest 5.3: Half carry flag can be fetched and set");
+    printf("\nHCarry: %d\n", cpu.getHCarryFlag());
+    cpu.setHCarryFlag(false);
+    checkFlags(cpu);
+
+    printf("\nTest 5.4: Zero flag can be fetched and set");
+    printf("\nCarry: %d\n", cpu.getCarryFlag());
+    cpu.setCarryFlag(false);
+    checkFlags(cpu);
 }
