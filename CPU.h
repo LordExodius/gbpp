@@ -40,6 +40,10 @@ public:
     bool getCarryFlag();
     void setCarryFlag(bool);
 
+    // CPU Instructions
+    int ExecuteOpcode(BYTE opcode);
+    int ExecuteNextOpcode( );
+
     // DEBUG
     void dumpRegisters();
 };
