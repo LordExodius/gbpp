@@ -1,11 +1,24 @@
 #ifndef CPU_H_INCLUDED
 #define CPU_H_INCLUDED
+
 #include "Register.h"
+#include "MMU.h"
+
+#define CPU_CLOCK_SPEED 4194304;
 
 #define ZERO_VALUE 0x80
 #define SUB_VALUE 0x40
 #define HALF_VALUE 0x20
 #define CARRY_VALUE 0x10
+
+#define TIMA 0xFF05
+#define TMA 0xFF06
+#define TMC 0xFF07
+
+#define TMA_0 = 4096
+#define TMA_1 = 262144
+#define TMA_2 = 65536
+#define TMA_3 = 16384
 
 class CPU
 {
@@ -18,14 +31,18 @@ private:
     Register PC;    ///< Program Counter.
     Register SP;    ///< Stack Pointer.
 
+    MMU *mmu;
+
 public:
     /**
-     * @brief Constructor for CPU object. Initializes register and timer values appropriately.
+     * @brief Construct a new `CPU` object.
+     * 
+     * @param mmu Pointer to MMU instance in `Emulator` class.
      */
-    CPU(/* args */);
+    CPU(MMU *mmu);
 
     /**
-     * @brief Destroy the CPU::CPU object
+     * @brief Destroy the `CPU::CPU` object
      */
     ~CPU();
 
@@ -39,6 +56,9 @@ public:
     void setHCarryFlag(bool);
     bool getCarryFlag();
     void setCarryFlag(bool);
+
+    // Timer
+    void updateTimer(int cycles);
 
     // DEBUG
     void dumpRegisters();

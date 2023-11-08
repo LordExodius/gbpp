@@ -9,7 +9,7 @@
 #include "global.h"
 #include "CPU.h"
 
-CPU::CPU(/* args */)
+CPU::CPU(MMU *mmu)
 {
     // Init values from Pandocs for DMG Gameboy
     CPU::AF.setWord(0x01B0);
@@ -47,6 +47,11 @@ bool CPU::getCarryFlag() {
 }
 void CPU::setCarryFlag(bool set) {
     CPU::AF.lower = set ? CPU::AF.lower | CARRY_VALUE : CPU::AF.lower & ~CARRY_VALUE;
+}
+
+// Timer
+void CPU::updateTimer(int cycles) {
+    
 }
 
 // DEBUG
