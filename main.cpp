@@ -2,6 +2,7 @@
 
 #include "CPU.h"
 #include "MMU.h"
+#include "Cartridge.h"
 
 void checkFlags(CPU cpu) {
     std::cout << "z: " << cpu.getZeroFlag() << "\n";
@@ -12,6 +13,8 @@ void checkFlags(CPU cpu) {
 
 int main() {
     CPU cpu;
+    Cartridge cartridge;
+    cartridge.loadCartridge("Pokemon.gb");
 
     cpu.dumpRegisters();
 
