@@ -1,7 +1,8 @@
 #include "Emulator.h"
 
-Emulator::Emulator(): cpu(&mmu) {
-    cartridge.loadCartridge("Pokemon.gb");
+Emulator::Emulator(const char *fileName): cpu(&mmu) {
+    printf("Loading %s\n", fileName);
+    cartridge.loadCartridge(fileName);
 }
 
 Emulator::~Emulator() {

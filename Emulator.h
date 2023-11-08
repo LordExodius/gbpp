@@ -17,7 +17,7 @@ public:
     /**
      * @brief Constructor for Emulator object
      */
-    Emulator();
+    Emulator(const char *fileName);
 
     /**
      * @brief Destroy the Emulator object
