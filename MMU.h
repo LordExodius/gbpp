@@ -6,7 +6,7 @@
 class MMU
 {
 private:
-    u8 memory[0x10000]; ///< Gameboy Memory
+    u8 memory[0xFFFF]; ///< Gameboy Memory
 public:
     MMU(/* args */);
     ~MMU();
