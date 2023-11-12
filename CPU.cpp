@@ -120,7 +120,7 @@ void CPU::updateTimer(int instructionCycles) { // M CYCLES
         u8 TIMA = getTimer();
         if (TIMA == 0xFF) {
             setTimer(getTimerModulo());
-            // SET INTERRUPT
+            // [TODO] SET INTERRUPT
         }
         timerCounter -= CPU_CLOCK_SPEED/frequency;
     }
