@@ -28,18 +28,18 @@ class CPU
 private:
     // Registers
     Register AF;    ///< `A` and `F` register pair (Accumulator and Flag registers).
-    Register BC;    ///< `B` and `C` register pair ().
-    Register DE;    ///< `D` and `E` register pair ().
+    Register BC;    ///< `B` and `C` register pair.
+    Register DE;    ///< `D` and `E` register pair.
     Register HL;    ///< `H` and `L` register pair.
     Register PC;    ///< Program Counter.
     Register SP;    ///< Stack Pointer.
 
     // Memory
-    MMU *mmu;
+    MMU *mmu;       ///< Pointer to MMU object associated with the emulator.
 
     // Timer
-    int divCounter = 0;
-    int timerCounter = 0;
+    int divCounter = 0;     ///< Internal counter used to determine the number of CPU cycles passed before incrementing DIV
+    int timerCounter = 0;   ///< Internal counter used to determine the number of CPU cycles passed before incrementing TIMA
 
 public:
     /**
@@ -63,6 +63,15 @@ public:
     void setHCarryFlag(bool);
     bool getCarryFlag();
     void setCarryFlag(bool);
+
+    // Instructions
+    /**
+     * @brief Given an 8-bit CPU instruction, execute the associated Opcode and update flags as necessary.
+     * 
+     * @param instruction An 8-bit encoded CPU opcode.
+     * @return `int` The number of M-cycles taken to execute the opcode.
+     */
+    int executeInstruction(u8 instruction);
 
     // Timer
     u8 getDivider();
