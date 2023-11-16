@@ -64,6 +64,10 @@ public:
     bool getCarryFlag();
     void setCarryFlag(bool);
 
+    // Helpers
+    bool checkHCarry_8(u8 arg1, u8 arg2, u8 res);
+    bool checkHCarry_16(u16 arg1, u16 arg2, u16 res);
+
     // Instructions
     /**
      * @brief Given an 8-bit CPU instruction, execute the associated Opcode and update flags as necessary.
