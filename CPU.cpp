@@ -49,6 +49,14 @@ void CPU::setCarryFlag(bool set) {
     CPU::AF.lower = set ? CPU::AF.lower | CARRY_VALUE : CPU::AF.lower & ~CARRY_VALUE;
 }
 
+// Helpers
+bool CPU::checkHCarry_8(u8 arg1, u8 arg2, u8 res) {
+    return ((arg1 ^ arg2 ^ res) & 0x10);
+}
+bool CPU::checkHCarry_16(u16 arg1, u16 arg2, u16 res) {
+    return ((arg1 ^ arg2 ^ res) & 0x1000);
+}
+
 // Timer
 u8 CPU::getDivider() {
     return mmu->readByte(DIV_ADDR);
@@ -96,7 +104,8 @@ void CPU::updateTimer(int instructionCycles) { // M CYCLES
     u8 TAC = mmu->readByte(TAC_ADDR); // Get TAC byte
     if (TAC & 0x04 == 0x00) return; // do not do anything if timer is disabled
 
-    int frequency; // Frequency = bits 1 and 0 of TAC
+    // Frequency of TIMA is determined by bits 1 and 0 of TAC
+    int frequency; 
     switch (TAC & 0x03) {
         case 0x00: 
             frequency = TAC_0;
