@@ -6,11 +6,11 @@
 #include <iomanip>
 
 // Headers
-#include "global.h"
 #include "CPU.h"
 
-CPU::CPU(/* args */)
+CPU::CPU(MMU* mmu)
 {
+    CPU::mmu = mmu;
     // Init values from Pandocs for DMG Gameboy
     CPU::AF.setWord(0x01B0);
     CPU::BC.setWord(0x0013);    
@@ -49,24 +49,94 @@ void CPU::setCarryFlag(bool set) {
     CPU::AF.lower = set ? CPU::AF.lower | CARRY_VALUE : CPU::AF.lower & ~CARRY_VALUE;
 }
 
-// CPU Instructions
-int CPU::ExecuteNextOpcode( )
-{
-   int res = 0
-   BYTE opcode = ReadMemory(m_ProgramCounter) ;
-   m_ProgramCounter++ ;
-   res = ExecuteOpcode(opcode) ;
-   return res ;
-} 
+// Timer
+u8 CPU::getDivider() {
+    return mmu->readByte(DIV_ADDR);
+}
 
-void executeOpCodes(uint16_t opcode){
-    switch (opcode)
+u8 CPU::getTimer() {
+    return mmu->readByte(TIMA_ADDR);
+}
+
+u8 CPU::getTimerModulo() {
+    return mmu->readByte(TMA_ADDR);
+}
+
+void CPU::resetDivider() {
+    mmu->writeByte(DIV_ADDR, 0x00);
+}
+
+void CPU::setDivider(u8 value) {
+    mmu->writeByte(DIV_ADDR, value);
+}
+
+void CPU::setTimer(u8 value) {
+    mmu->writeByte(TIMA_ADDR, value);
+}
+
+void CPU::setTimerModulo(u8 value) {
+    mmu->writeByte(TMA_ADDR, value);
+}
+
+void CPU::updateTimer(int instructionCycles) { // M CYCLES
+    // Update DIV before timer, independent of timer control
+    int cpuCycles = 4 * instructionCycles; // T cycles
+
+    divCounter += cpuCycles;
+    while (divCounter >= (CPU_CLOCK_SPEED/DIV_SPEED)) { // If enough CPU cycles have passed, (256) increment divider
+        u8 divider = getDivider();
+        if (divider == 0xFF) // Reset once divider hits 255
+            resetDivider();
+        else 
+            setDivider(divider + 1);
+
+        divCounter -= CPU_CLOCK_SPEED/DIV_SPEED;
+    }
+    
+    u8 TAC = mmu->readByte(TAC_ADDR); // Get TAC byte
+    if (TAC & 0x04 == 0x00) return; // do not do anything if timer is disabled
+
+    int frequency; // Frequency = bits 1 and 0 of TAC
+    switch (TAC & 0x03) {
+        case 0x00: 
+            frequency = TAC_0;
+            break;
+        case 0x01:
+            frequency = TAC_1;
+            break;
+        case 0x02:
+            frequency = TAC_2;
+            break;
+        case 0x03:
+            frequency = TAC_3;
+            break;
+        default:
+            frequency = TAC_0;
+            break;
+    }
+
+    timerCounter += cpuCycles;
+    while (timerCounter >= CPU_CLOCK_SPEED/frequency) {
+        u8 TIMA = getTimer();
+        if (TIMA == 0xFF) {
+            setTimer(getTimerModulo());
+            // [TODO] SET INTERRUPT
+        }
+        timerCounter -= CPU_CLOCK_SPEED/frequency;
+    }
+}
+
+int CPU::executeInstruction(u8 instruction){
+    switch (instruction)
         {
+            // ADD r: Add(register)
             case 0x80:
-                int result, carry_bit = AF.higher + BC.higher;
-                AF.higher = result;
-                CPU::setZeroFlag(result==0);
+                AF.higher += BC.higher;
+                CPU::setZeroFlag(AF.higher==0);
                 CPU::setSubFlag(0);
+                CPU::setHCarryFlag();
+                CPU::setCarryFlag();
+                return 1;
                 break;
             case 0x81:
                 int result, carry_bit =AF.higher + BC.lower;
