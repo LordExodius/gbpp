@@ -17,11 +17,9 @@ void checkFlags(CPU cpu)
 int main(int argc, char *argv[])
 {
     printf("EMULATOR TESTS\n");
-    Graphics graphics;
-    graphics.run();
     // printf("Test 1: User can load game file using command line argument\n");
-    // const char *fileName = argv[1];
-    // Emulator emulator(fileName);
+    const char *fileName = argv[1];
+    Emulator emulator(fileName);
 
     printf("\nCARTRIDGE TESTS\n");
     printf("Test 1: User can load ROM file and read header\n");
