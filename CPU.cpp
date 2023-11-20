@@ -129,239 +129,303 @@ void CPU::updateTimer(int instructionCycles) { // M CYCLES
 int CPU::executeInstruction(u8 instruction){
     switch (instruction)
         {
-            // ADD r: Add(register)
+            // ADD A, B
             case 0x80:
-                AF.higher += BC.higher;
+                u8 res = AF.higher + BC.higher;
                 CPU::setZeroFlag(AF.higher==0);
                 CPU::setSubFlag(0);
-                CPU::setHCarryFlag();
-                CPU::setCarryFlag();
+                CPU::setHCarryFlag(res);
+                AF.higher = res;
                 return 1;
                 break;
+            // ADD A, C
             case 0x81:
                 int result, carry_bit =AF.higher + BC.lower;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
-            case 0x82:
+           // ADD A, D
+           case 0x82:
                 int result, carry_bit = AF.higher + DE.higher;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADD A, E
             case 0x83:
                 int result, carry_bit = AF.higher + DE.lower;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADD A, H
             case 0x84:
                 int result, carry_bit = AF.higher + HL.higher;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADD A, L
             case 0x85:
                 int result, carry_bit = AF.higher + HL.lower;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADD A, (HL)
+            // Adds to the 8-bit A register, 
+            // data from the absolute address specified by the 16-bit register HL, 
+            // stores result back into the A register.
             case 0x86:
                 result, carry_bit = AF.higher + HL.getWord();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADD A, A
             case 0x87:
                 result, carry_bit = AF.higher + AF.higher;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADC A, B
             case 0x88:
                 result, carry_bit = AF.higher + BC.higher + CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADC A, C
             case 0x89:
                 result, carry_bit = AF.higher + BC.lower + CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADC A, D
             case 0x8A:
                 result, carry_bit = AF.higher + DE.higher + CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADC A, E
             case 0x8B:
                 result, carry_bit = AF.higher + DE.lower + CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADC A, H
             case 0x8C:
                 result, carry_bit = AF.higher + HL.higher + CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADC A, L
             case 0x8D:
                 result, carry_bit = AF.higher + HL.lower + CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
                 break;
+            // ADC A, (HL)
+            // Adds to the 8-bit A register, 
+            // the carry flag and data from the absolute address specified by the 16-bit register HL, 
+            // and stores the result back into the A register.
             case 0x8E:
                 result, carry_bit = AF.higher + HL.getWord() + CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
+            // ADC A, A
             case 0x8F:
                 result, carry_bit = AF.higher + AF.lower() + CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(0);
+            // SUB A, B
             case 0x90:
                 result, carry_bit = AF.higher - BC.higher;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SUB A, C
             case 0x91:
                 result, carry_bit = AF.higher - BC.lower;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SUB A, D
             case 0x92:
                 result, carry_bit = AF.higher - DE.higher;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SUB A, E
             case 0x93:
                 result, carry_bit = AF.higher - DE.lower;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SUB A, H
             case 0x94:
                 result, carry_bit = AF.higher - HL.higher;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SUB A, L
             case 0x95:
                 result, carry_bit = AF.higher - HL.lower;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SUB A, (HL)
+            // Subtracts from the 8-bit A register, 
+            // data from the absolute address specified by the 16-bit register HL, 
+            // and stores the result back into the A register.
             case 0x96:
                 result, carry_bit = AF.higher - HL.getWord();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SUB A, A
             case 0x97:
                 result, carry_bit = AF.higher - AF.higher;
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SBC A, B
             case 0x98:
                 result, carry_bit = AF.higher - BC.higher - CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SBC A, C
             case 0x99:
                 result, carry_bit = AF.higher - BC.lower - CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SBC A, D
             case 0x9A:
                 result, carry_bit = AF.higher + DE.higher - CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SBC A, E
             case 0x9B:
                 result, carry_bit = AF.higher + DE.lower - CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SBC A, H
             case 0x9C:
                 result, carry_bit = AF.higher + HL.higher - CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SBC A, L
             case 0x9D:
                 result, carry_bit = AF.higher + HL.lower - CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
                 break;
+            // SBC A, (HL)
+            // Subtracts from the 8-bit A register, 
+            // the carry flag and data from the absolute address specified by the 16-bit register HL, 
+            // and stores the result back into the A register.
             case 0x9E:
                 result, carry_bit = AF.higher + HL.getWord() - CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
+            // SBC A, A
             case 0x9F:
                 result, carry_bit = AF.higher + AF.lower() - CPU::getCarryFlag();
                 AF.higher = result;
                 CPU::setZeroFlag(result==0);
                 CPU::setSubFlag(1);
+            // AND A, B: Bitwise AND 
             case 0xA0:
                 AF.higher &= BC.higher;
                 break;
+            // AND A, C
             case 0xA1:
                 AF.higher = AF.higher and BC.lower;
                 break;
+            // AND A, D
             case 0xA2:
                 AF.higher = AF.higher - DE.higher;
                 break;
+            // AND A, E
             case 0xA3:
                 AF.higher = AF.higher - DE.lower;
                 break;
+            // AND A, H
             case 0xA4:
                 AF.higher = AF.higher - HL.higher;
                 break;
+            // AND A, L
             case 0xA5:
                 AF.higher = AF.higher - HL.lower;
                 break;
+            // AND A, (HL)
+            // Performs a bitwise AND operation between 
+            // the 8-bit A register and data from the absolute address specified by the 16-bit register HL, 
+            // and stores the result back into the A register.
             case 0xA6:
                 AF.higher = AF.higher - HL.getWord();
                 break;
+            // AND A, A
             case 0xA7:
                 AF.higher = AF.higher - AF.higher;
                 break;
+            // XOR A, B
             case 0xA8:
                 AF.higher = AF.higher - BC.higher - CPU::getCarryFlag();
                 break;
+            // XOR A, C
             case 0xA9:
                 AF.higher = AF.higher - BC.lower - CPU::getCarryFlag();
                 break;
+            // XOR A, D
             case 0xAA:
                 AF.higher = AF.higher + DE.higher - CPU::getCarryFlag();
                 break;
+            // XOR A, E
             case 0xAB:
                 AF.higher = AF.higher + DE.lower - CPU::getCarryFlag();
                 break;
+            // XOR A, H
             case 0xAC:
                 AF.higher = AF.higher + HL.higher - CPU::getCarryFlag();
                 break;
+            // XOR A, L
             case 0xAD:
                 AF.higher = AF.higher + HL.lower - CPU::getCarryFlag();
                 break;
+            // XOR (HL)
+            // Performs a bitwise XOR operation between 
+            // the 8-bit A register and data from the absolute address specified by the 16-bit register HL, 
+            // and stores the result back into the A register.
             case 0xAE:
                 AF.higher = AF.higher + HL.getWord() - CPU::getCarryFlag();
             case 0xAF:
