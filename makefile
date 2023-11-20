@@ -1,8 +1,8 @@
 CXX=g++
 CXXFLAGS=--std=c++17
 
-DEPS = global.h CPU.h MMU.h Register.h Cartridge.h Emulator.h
-OBJS = test.o CPU.o MMU.o Register.o Cartridge.o Emulator.o
+DEPS = global.h CPU.h MMU.h Register.h Cartridge.h Emulator.h catch_amalgamated.hpp
+OBJS = test.o CPU.o MMU.o Register.o Cartridge.o Emulator.o catch_amalgamated.o
 
 # Build objects
 # $@ : Name of target being generated
