@@ -1,19 +1,14 @@
-#ifndef GRAPHICS_H_INCLUDED
-#define GRAPHICS_H_INCLUDED
+#pragma once
+
+#include <SFML/Graphics.hpp>
 
 class Graphics
 {
-private:
-    int displayWidth;
-    int displayHeight;
-    int **frameBuffer;
-    int *colorPalette;
-
 public:
-    Graphics(int width, int height);
-    ~Graphics();
-    void initDisplay();
-    void updateDisplay();
-};
+    Graphics();
+    void run();
 
-#endif
+private:
+    sf::RenderWindow window;
+    sf::CircleShape shape;
+};
