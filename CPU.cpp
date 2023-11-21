@@ -13,7 +13,7 @@ CPU::CPU(MMU* mmu)
     CPU::mmu = mmu;
     // Init values from Pandocs for DMG Gameboy
     CPU::AF.setWord(0x01B0);
-    CPU::BC.setWord(0x0013);    
+    CPU::BC.setWord(0x0013);
     CPU::DE.setWord(0x00D8);
     CPU::HL.setWord(0x014D);
     CPU::SP.setWord(0xFFFE);

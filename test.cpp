@@ -9,20 +9,21 @@
 #define CONFIG_CATCH_MAIN
 #include "catch_amalgamated.hpp"
 
-TEST_CASE("F register flags are accessible", "[noArgs]") {
+TEST_CASE("F register flags are accessible and initialized correctly") {
     MMU mmu;
     CPU cpu(&mmu);
+    // Register F init to 0xB0 (0b10110000)
     REQUIRE(cpu.getZeroFlag() == true);
     REQUIRE(cpu.getSubFlag() == false);
     REQUIRE(cpu.getHCarryFlag() == true);
     REQUIRE(cpu.getCarryFlag() == true);
 }
 
-void checkFlags(CPU cpu) {
-    std::cout << "z: " << cpu.getZeroFlag() << "\n";
-    std::cout << "n: " << cpu.getSubFlag() << "\n";
-    std::cout << "h: " << cpu.getHCarryFlag() << "\n";
-    std::cout << "c: " << cpu.getCarryFlag() << "\n\n";
+TEST_CASE("Cartridge returns correctly for valid and invalid ROM files") {
+    Cartridge cart1;
+    REQUIRE(cart1.loadCartridge("Tetris.gb") == true);
+    Cartridge cart2;
+    REQUIRE(cart2.loadCartridge("GAJGLSDHGSHL") == false);
 }
 
 // int main(int argc, char *argv[]) {
