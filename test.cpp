@@ -4,15 +4,18 @@
 #include "MMU.h"
 #include "Cartridge.h"
 #include "Emulator.h"
+#include "input.h"
 
-void checkFlags(CPU cpu) {
+void checkFlags(CPU cpu)
+{
     std::cout << "z: " << cpu.getZeroFlag() << "\n";
     std::cout << "n: " << cpu.getSubFlag() << "\n";
     std::cout << "h: " << cpu.getHCarryFlag() << "\n";
     std::cout << "c: " << cpu.getCarryFlag() << "\n\n";
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     printf("EMULATOR TESTS\n");
     printf("Test 1: User can load game file using command line argument\n");
     const char *fileName = argv[1];
@@ -66,4 +69,12 @@ int main(int argc, char *argv[]) {
     printf("\nCan write a word to memory:\n");
     mmu.writeByte(0, 0xF);
     printf("MMU Memory at 0x00: %d\n\n", mmu.readWord(0));
+
+    printf("INPUT CLASS TESTS\n");
+    printf("If the user presses l\n");
+    Input input;
+    input.pressKey('l');
+    std::cout << "Decimal State: " << +input.getInputState() << std::endl;
+    printf("\n");
+    input.releaseKey('l');
 }
