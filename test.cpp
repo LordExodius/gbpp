@@ -4,7 +4,7 @@
 #include "MMU.h"
 #include "Cartridge.h"
 #include "Emulator.h"
-#include "input.h"
+#include "Input.h"
 
 void checkFlags(CPU cpu)
 {
@@ -70,11 +70,27 @@ int main(int argc, char *argv[])
     mmu.writeByte(0, 0xF);
     printf("MMU Memory at 0x00: %d\n\n", mmu.readWord(0));
 
-    printf("INPUT CLASS TESTS\n");
-    printf("If the user presses l\n");
-    Input input;
-    input.pressKey('l');
-    std::cout << "Decimal State: " << +input.getInputState() << std::endl;
-    printf("\n");
-    input.releaseKey('l');
+    printf("INPUT CLASS TESTS (press 'q' to quit)\n");
+    Input input(mmu);
+    bool continueLoop = true;
+
+    while (continueLoop) {
+        char key;
+        printf("Pressing key: ");
+        std::cin >> key;
+        if (key == 'q') {
+            continueLoop = false;
+        }
+        else {
+            input.pressKey(key);
+            std::cout << "Button State: " << + input.getButtonKeysState() << std::endl;
+            std::cout << "Direction State: " << + input.getDirectionKeysState() << std::endl;
+
+            // Output memory at 0xFF00
+            std::cout << "Memory at 0xFF00: " << std::hex << (int)mmu.readByte(0xFF00) << "\n";
+            printf("\n");
+
+            input.releaseKey(key);
+        }
+    }
 }
