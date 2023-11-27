@@ -49,12 +49,18 @@ void CPU::setCarryFlag(bool set) {
     CPU::AF.lower = set ? CPU::AF.lower | CARRY_VALUE : CPU::AF.lower & ~CARRY_VALUE;
 }
 
-// Helpers
+// Flag Helpers
 bool CPU::checkHCarry_8(u8 arg1, u8 arg2, u8 res) {
     return ((arg1 ^ arg2 ^ res) & 0x10);
 }
 bool CPU::checkHCarry_16(u16 arg1, u16 arg2, u16 res) {
     return ((arg1 ^ arg2 ^ res) & 0x1000);
+}
+bool CPU::checkCarry_8(u8 arg1, u8 arg2) {
+    return ( static_cast<u16> (arg1) + static_cast<u16> (arg2) > 0xFF );
+}
+bool CPU::checkCarry_16(u16 arg1, u16 arg2) {
+    return ( static_cast<u32> (arg1) + static_cast<u32> (arg2) > 0xFFFF );
 }
 
 // Timer
@@ -139,117 +145,132 @@ int CPU::executeInstruction(u8 instruction){
     switch (instruction)
         {
             // ADD A, B
-            case 0x80:
+            case 0x80: {
                 u8 res = AF.higher + BC.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, BC.higher, res));
                 // CPU::setCarryFlag(CPU::)
                 AF.higher = res;
                 return 1;
+            }
+
             // ADD A, C
-            case 0x81:
+            case 0x81: {
                 u8 res = AF.higher + BC.lower;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, BC.lower, res));
                 AF.higher = res;
                 return 1;
+            }
+
            // ADD A, D
-           case 0x82:
+            case 0x82: {
                 u8 res = AF.higher + DE.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, DE.higher, res));
                 AF.higher = res;
                 return 1;
+            }
             // ADD A, E
-            case 0x83:
+            case 0x83: {
                 u8 res = AF.higher + DE.lower;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, DE.lower, res));
                 AF.higher = res;
                 return 1;
+                }
             // ADD A, H
-            case 0x84:
+            case 0x84: {
                 u8 res = AF.higher + HL.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, HL.higher, res));
                 AF.higher = res;
                 return 1;
+                }
             // ADD A, L
-            case 0x85:
+            case 0x85: {
                 u8 res = AF.higher + HL.lower;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
-                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,HL.lower, res));
+                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, HL.lower, res));
                 AF.higher = res;
                 return 1;
+                }
             // ADD A, (HL)
             // Adds to the 8-bit A register, 
             // data from the absolute address specified by the 16-bit register HL, 
             // stores result back into the A register.
-            case 0x86:
-                u16 res = AF.higher + HL.getWord();
-                CPU::setZeroFlag(res==0);
+            case 0x86: {
+                u16 res = AF.higher + mmu->readByte(HL.getWord());
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
-                CPU::setHCarryFlag(CPU::checkHCarry_16(AF.higher,HL.getWord(), res));
+                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, mmu->readByte(HL.getWord()), res));
                 AF.higher = res;
                 return 2;
+                }
             // ADD A, A
-            case 0x87:
+            case 0x87: {
                 u8 res = AF.higher + AF.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
-                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,AF.higher, res));
+                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, AF.higher, res));
                 AF.higher = res;
                 return 1;
+                }
             // ADC A, B
-            case 0x88:
+            case 0x88: {
                 u8 res = AF.higher + BC.higher + CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
-                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,BC.higher, res));
+                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, BC.higher, res));
                 AF.higher = res;
                 return 1;
+                }
             // ADC A, C
-            case 0x89:
+            case 0x89: {
                 u8 res = AF.higher + BC.lower + CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,BC.lower, res));
                 AF.higher = res;
                 return 1;
+                }
             // ADC A, D
-            case 0x8A:
+            case 0x8A: {
                 u8 res = AF.higher + DE.higher + CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,DE.higher, res));
                 AF.higher = res;
                 return 1;
+            }
             // ADC A, E
-            case 0x8B:
+            case 0x8B: {
                 u8 res = AF.higher + DE.lower + CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,DE.lower, res));
                 AF.higher = res;
                 return 1;
+                }
             // ADC A, H
-            case 0x8C:
+            case 0x8C: {
                 u8 res = AF.higher + HL.higher + CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,HL.higher, res));
                 AF.higher = res;
                 return 1;
+                }
             // ADC A, L
             case 0x8D:
                 u8 res = AF.higher + HL.lower + CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,HL.lower, res));
                 AF.higher = res;
@@ -260,7 +281,7 @@ int CPU::executeInstruction(u8 instruction){
             // and stores the result back into the A register.
             case 0x8E:
                 u16 res = AF.higher + HL.getWord() + CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_16(AF.higher,HL.getWord(), res));
                 AF.higher = res;
@@ -268,23 +289,23 @@ int CPU::executeInstruction(u8 instruction){
             // ADC A, A
             case 0x8F:
                 u8 res = AF.higher + AF.lower + CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(0);
-                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,AF.lower, res));
+                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, AF.lower, res));
                 AF.higher = res;
                 return 1;
             // SUB A, B
             case 0x90:
                 u8 res = AF.higher - BC.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
-                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,BC.higher, res));
+                CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, BC.higher, res));
                 AF.higher = res;
                 return 1;
             // SUB A, C
             case 0x91:
                 u8 res = AF.higher - BC.lower;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,BC.lower, res));
                 AF.higher = res;
@@ -292,7 +313,7 @@ int CPU::executeInstruction(u8 instruction){
             // SUB A, D
             case 0x92:
                 u8 res = AF.higher - DE.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,DE.higher, res));
                 AF.higher = res;
@@ -300,7 +321,7 @@ int CPU::executeInstruction(u8 instruction){
             // SUB A, E
             case 0x93:
                 u8 res = AF.higher - DE.lower;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,DE.lower, res));
                 AF.higher = res;
@@ -308,7 +329,7 @@ int CPU::executeInstruction(u8 instruction){
             // SUB A, H
             case 0x94:
                 u8 res = AF.higher - HL.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,HL.higher, res));
                 AF.higher = res;
@@ -316,7 +337,7 @@ int CPU::executeInstruction(u8 instruction){
             // SUB A, L
             case 0x95:
                 u8 res = AF.higher - HL.lower;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,HL.lower, res));
                 AF.higher = res;
@@ -327,7 +348,7 @@ int CPU::executeInstruction(u8 instruction){
             // and stores the result back into the A register.
             case 0x96:
                 u16 res = AF.higher - mmu->readByte(HL.getWord());
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_16(AF.higher,HL.getWord(), res));
                 AF.higher = res;
@@ -335,7 +356,7 @@ int CPU::executeInstruction(u8 instruction){
             // SUB A, A
             case 0x97:
                 u8 res = AF.higher - AF.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(res);
                 AF.higher = res;
@@ -343,7 +364,7 @@ int CPU::executeInstruction(u8 instruction){
             // SBC A, B
             case 0x98:
                 u8 res = AF.higher - BC.higher - CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,BC.higher, res));
                 AF.higher = res;
@@ -351,7 +372,7 @@ int CPU::executeInstruction(u8 instruction){
             // SBC A, C
             case 0x99:
                 u8 res = AF.higher - BC.lower - CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,BC.lower, res));
                 AF.higher = res;
@@ -359,7 +380,7 @@ int CPU::executeInstruction(u8 instruction){
             // SBC A, D
             case 0x9A:
                 u8 res = AF.higher - DE.higher - CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,DE.higher, res));
                 AF.higher = res;
@@ -367,7 +388,7 @@ int CPU::executeInstruction(u8 instruction){
             // SBC A, E
             case 0x9B:
                 u8 res = AF.higher - DE.lower - CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,DE.lower, res));
                 AF.higher = res;
@@ -375,7 +396,7 @@ int CPU::executeInstruction(u8 instruction){
             // SBC A, H
             case 0x9C:
                 u8 res = AF.higher - HL.higher - CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,HL.higher, res));
                 AF.higher = res;
@@ -383,7 +404,7 @@ int CPU::executeInstruction(u8 instruction){
             // SBC A, L
             case 0x9D:
                 u8 res = AF.higher - HL.lower - CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,HL.lower, res));
                 AF.higher = res;
@@ -394,7 +415,7 @@ int CPU::executeInstruction(u8 instruction){
             // and stores the result back into the A register.
             case 0x9E:
                 u8 res = AF.higher - mmu->readByte(HL.getWord()) - CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,mmu->readByte(HL.getWord()), res));
                 AF.higher = res;
@@ -402,7 +423,7 @@ int CPU::executeInstruction(u8 instruction){
             // SBC A, A
             case 0x9F:
                 u8 res = AF.higher + AF.higher - CPU::getCarryFlag();
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher,mmu->readByte(HL.getWord()), res));
                 AF.higher = res;
@@ -608,7 +629,7 @@ int CPU::executeInstruction(u8 instruction){
             // CP: A, B
             case 0xB8:
                 res = AF.higher - BC.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, BC.higher, res));
                 CPU::setCarryFlag(1);
@@ -617,7 +638,7 @@ int CPU::executeInstruction(u8 instruction){
             // CP: A, C
             case 0xB9:
                 res = AF.higher - BC.lower;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, BC.lower, res));
                 CPU::setCarryFlag(1);
@@ -626,7 +647,7 @@ int CPU::executeInstruction(u8 instruction){
             // CP: A, D
             case 0xBA:
                 res = AF.higher - DE.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, DE.higher, res));
                 CPU::setCarryFlag(1);
@@ -635,7 +656,7 @@ int CPU::executeInstruction(u8 instruction){
             // CP: A, E
             case 0xBB:
                 res = AF.higher - DE.lower;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, DE.lower, res));
                 CPU::setCarryFlag(1);
@@ -644,7 +665,7 @@ int CPU::executeInstruction(u8 instruction){
             // CP: A, H
             case 0xBC:
                 res = AF.higher - HL.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, HL.higher, res));
                 CPU::setCarryFlag(1);
@@ -653,7 +674,7 @@ int CPU::executeInstruction(u8 instruction){
             // CP: A, L
             case 0xBD:
                 res = AF.higher - HL.lower;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, HL.lower, res));
                 CPU::setCarryFlag(1);
@@ -662,7 +683,7 @@ int CPU::executeInstruction(u8 instruction){
             // CP: A, (HL)
             case 0xBE:
                 res = AF.higher - CPU::mmu->readByte(HL.getWord());
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, HL.lower, res));
                 CPU::setCarryFlag(1);
@@ -671,7 +692,7 @@ int CPU::executeInstruction(u8 instruction){
             // CP: A, A
             case 0xBF:
                 res = AF.higher - AF.higher;
-                CPU::setZeroFlag(res==0);
+                CPU::setZeroFlag(!res);
                 CPU::setSubFlag(1);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, AF.higher, res));
                 CPU::setCarryFlag(1);
@@ -680,6 +701,14 @@ int CPU::executeInstruction(u8 instruction){
         }
 }
 
+void CPU::add_a(u8 arg) {
+    u16 res = AF.higher + arg;
+    CPU::setZeroFlag(!res);
+    CPU::setSubFlag(false);
+    CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, BC.higher, res));
+    // CPU::setCarryFlag(CPU::)
+    AF.higher = res;
+}
 // DEBUG
 
 void CPU::dumpRegisters() {

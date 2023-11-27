@@ -67,6 +67,8 @@ public:
     // Helpers
     bool checkHCarry_8(u8 arg1, u8 arg2, u8 res);
     bool checkHCarry_16(u16 arg1, u16 arg2, u16 res);
+    bool checkCarry_8(u8 arg1, u8 arg2);
+    bool checkCarry_16(u16 arg1, u16 arg2);
 
     // Instructions
     /**
@@ -76,6 +78,12 @@ public:
      * @return `int` The number of M-cycles taken to execute the opcode.
      */
     int executeInstruction(u8 instruction);
+
+    void add_a(u8 arg);
+    void add_hl(u16 arg);
+    void add_sp(s8 arg);
+    void adc();
+
 
     // Timer
     u8 getDivider();
