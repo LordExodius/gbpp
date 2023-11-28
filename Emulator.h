@@ -32,6 +32,7 @@ public:
     ~Emulator();
 
     void loop();
+    void handleInterrupts();
     void run();
 };
 

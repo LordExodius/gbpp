@@ -22,6 +22,36 @@ CPU::CPU(MMU *mmu)
 
 CPU::~CPU() {}
 
+// REGISTERS
+u16 CPU::getSP()
+{
+    return CPU::SP.getWord();
+}
+void CPU::setSP(u16 value)
+{
+    CPU::SP.setWord(value);
+}
+u16 CPU::getPC()
+{
+    return CPU::PC.getWord();
+}
+void CPU::setPC(u16 value)
+{
+    CPU::PC.setWord(value);
+}
+
+void CPU::pushStackWord(u16 word) {
+    // Push word to stack and decrement the pointer
+    // Decrement push lower byte
+    SP.setWord(SP.getWord() - 1);
+    u8 lower = (u8) (word & 0x00FF);
+    mmu->writeByte(SP.getWord(), lower);
+    // Push higher byte
+    SP.setWord(SP.getWord() - 1);
+    u8 higher = (u8) ((word & 0xFF00) >> 8);
+    mmu->writeByte(SP.getWord(), higher);
+}
+
 // Flag Operations
 
 bool CPU::getZeroFlag()
@@ -1231,14 +1261,13 @@ int CPU::executeInstruction(u8 instruction)
     }
 }
 
-void CPU::add_a(u8 arg)
-{
+void CPU::add_a(u8 arg) {
     u16 res = AF.lower + arg;
-    CPU::setZeroFlag(!res);
-    CPU::setSubFlag(false);
-    CPU::setHCarryFlag(CPU::checkHCarry_8(AF.lower, BC.higher, res));
-    // CPU::setCarryFlag(CPU::)
-    AF.lower = res;
+    setZeroFlag(!res);
+    setSubFlag(false);
+    setHCarryFlag(checkHCarry_8(AF.higher, arg, res));
+    setCarryFlag(checkCarry_8(AF.higher, arg));
+    AF.higher = res;
 }
 // DEBUG
 
