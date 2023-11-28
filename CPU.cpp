@@ -1255,6 +1255,71 @@ int CPU::executeInstruction(u8 instruction)
         CPU::setHCarryFlag(0);
         CPU::setCarryFlag(0);
         return 1;
+    // CP A,B
+    case 0xB8:
+    {
+        int res = AF.lower - BC.lower;
+        CPU::setZeroFlag(res==0);
+        CPU::setSubFlag(1);
+        return 1;
+    }
+    // CP A,C
+    case 0xB9:
+    {
+        int res = AF.lower - BC.higher;
+        CPU::setZeroFlag(res==0);
+        CPU::setSubFlag(1);
+        return 1;
+    }
+    // CP A,D
+    case 0xBA:
+    {
+        int res = AF.lower - DE.lower;
+        CPU::setZeroFlag(res==0);
+        CPU::setSubFlag(1);
+        return 1;
+    }
+    // CP A,E
+    case 0xBB:
+    {
+        int res = AF.lower - DE.higher;
+        CPU::setZeroFlag(res==0);
+        CPU::setSubFlag(1);
+        return 1;
+    }
+    // CP A,H
+    case 0xBC:
+    {
+        int res = AF.lower - HL.lower;
+        CPU::setZeroFlag(res==0);
+        CPU::setSubFlag(1);
+        return 1;
+    }
+    // CP A,L
+    case 0xBD:
+    {
+        int res = AF.lower - HL.higher;
+        CPU::setZeroFlag(res==0);
+        CPU::setSubFlag(1);
+        return 1;
+    }
+    // CP A,(HL)
+    case 0xBE:
+    {
+        int res = AF.lower - mmu->readByte(HL.getWord());
+        CPU::setZeroFlag(res==0);
+        CPU::setSubFlag(1);
+        return 2;
+    }
+    // CP A,A
+    case 0xBF:
+    {
+        int res = AF.lower - AF.lower;
+        CPU::setZeroFlag(res==0);
+        CPU::setSubFlag(1);
+        return 1;
+    }
+    // RET NZ
     }
 }
 
