@@ -5,8 +5,6 @@
 #include "Register.h"
 #include "MMU.h"
 
-#define CPU_CLOCK_SPEED 4194304
-
 #define ZERO_VALUE 0x80
 #define SUB_VALUE 0x40
 #define HALF_VALUE 0x20
@@ -28,18 +26,18 @@ class CPU
 private:
     // Registers
     Register AF;    ///< `A` and `F` register pair (Accumulator and Flag registers).
-    Register BC;    ///< `B` and `C` register pair ().
-    Register DE;    ///< `D` and `E` register pair ().
+    Register BC;    ///< `B` and `C` register pair.
+    Register DE;    ///< `D` and `E` register pair.
     Register HL;    ///< `H` and `L` register pair.
     Register PC;    ///< Program Counter.
     Register SP;    ///< Stack Pointer.
 
     // Memory
-    MMU *mmu;
+    MMU *mmu;       ///< Pointer to MMU object associated with the emulator.
 
     // Timer
-    int divCounter = 0;
-    int timerCounter = 0;
+    int divCounter = 0;     ///< Internal counter used to determine the number of CPU cycles passed before incrementing DIV
+    int timerCounter = 0;   ///< Internal counter used to determine the number of CPU cycles passed before incrementing TIMA
 
 public:
     /**
@@ -63,6 +61,28 @@ public:
     void setHCarryFlag(bool);
     bool getCarryFlag();
     void setCarryFlag(bool);
+
+    // Helpers
+    bool checkHCarry_8(u8 arg1, u8 arg2, u8 res);
+    bool checkHCarry_16(u16 arg1, u16 arg2, u16 res);
+    bool checkCarry_8(u8 arg1, u8 arg2);
+    bool checkCarry_16(u16 arg1, u16 arg2);
+
+    // Instructions
+    u8 getInstruction();
+    /**
+     * @brief Given an 8-bit CPU instruction, execute the associated Opcode and update flags as necessary.
+     * 
+     * @param instruction An 8-bit encoded CPU opcode.
+     * @return `int` The number of M-cycles taken to execute the opcode.
+     */
+    int executeInstruction(u8 instruction);
+
+    void add_a(u8 arg);
+    void add_hl(u16 arg);
+    void add_sp(s8 arg);
+    void adc();
+
 
     // Timer
     u8 getDivider();

@@ -4,6 +4,7 @@
 #include "MMU.h"
 #include "Cartridge.h"
 #include "Emulator.h"
+#include "Graphics.h"
 
 // Unit Testing
 #define CONFIG_CATCH_MAIN
