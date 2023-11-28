@@ -1320,6 +1320,165 @@ int CPU::executeInstruction(u8 instruction)
         return 1;
     }
     // RET NZ
+    case 0xC0:
+    {
+        if (CPU::getZeroFlag()==1){
+            // The contents of the address specified by the stack pointer SP are loaded in the lower-order byte of PC
+            PC.lower = mmu->readByte(SP.getWord());
+            // The contents of SP are incremented by 1.
+            SP.setWord(SP.getWord()+1);
+            // The contents of the address specified by the new SP value are then loaded in the higher-order byte of PC,
+            PC.higher = mmu->readByte(SP.getWord());
+            // and the contents of SP are incremented by 1 again. 
+            SP.setWord(SP.getWord()+1);
+            return 5;
+        } else return 2; 
+    }
+    // POP BC
+    case 0xC1:
+        BC.lower = mmu->readByte(SP.getWord());
+        return 3; 
+    // JP NZ, u16 -- REVIEW
+    case 0xC2:
+    {
+        if (0) return 3; // update condition
+        else return 4; 
+    }
+    // JP u16:
+    case 0xC3:
+        return 4; 
+    // CALL NZ, u16
+    case 0xC4:
+    {
+        if (CPU::getZeroFlag()==0){
+            return 6;
+        }
+        else return 3; 
+    }
+    // PUSH BC
+    case 0xC5:
+        return 4;
+    // ADD A, d8 -- REVIEW
+    case 0xC6:
+        // AF.lower += d8; // don't know how to get d8 value
+        return 2;
+    // RST 0
+    case 0xC7:
+        return 4;
+    // RET Z
+    case 0xC8:
+        if (CPU::getZeroFlag()==1){
+            return 5;
+        }
+        return 2;
+    // RET
+    case 0xC9:
+    {
+        return 4;
+    }
+    // JP Z, a16
+    case 0xCA:
+    {
+        if (CPU::getZeroFlag()==1){
+            return 4;
+        } else {
+            return 3;
+        }
+    }
+    // CALL Z, a16
+    case 0xCC:
+    {
+        if (CPU::getZeroFlag()==1){
+            return 6;
+        } else {
+            return 3;
+        }
+    }
+    // CALL a16
+    case 0xCD:
+    {
+        return 6;
+    }
+    // ADC A, d8
+    case 0xCE:
+    {
+        // AF.lower += d8 + CPU::getCarryFlag(); // Don't know how to get d8
+        CPU::setZeroFlag(AF.lower == 0);
+        CPU::setHCarryFlag(AF.lower);
+        CPU::setCarryFlag(AF.lower);
+        return 2;
+    }
+    // RST 1
+    case 0xCF:
+    {
+        
+        return 4;
+    }
+    // RET NC
+    case 0xD0:
+    {
+        if (CPU::getCarryFlag==0){
+            return 5;
+        } else {
+            return 2;
+        }
+    }
+    // POP DE
+    case 0xD1:
+    {
+        DE.lower = mmu->readByte(SP.getWord());
+        SP.setWord(SP.getWord() + 1);
+        DE.higher = mmu->readByte(SP.getWord());
+        return 3;
+    }
+    // JP NC, a16
+    case 0xD2:
+    {
+        if (CPU::getCarryFlag==0){
+            return 4;
+        } else {
+            return 3;
+        }
+    }
+    // CALL NC, a16
+    case 0xD4:
+    {
+        if (CPU::getCarryFlag==0){
+            return 6;
+        } else {
+            return 3;
+        }
+    }
+    // PUSH DE
+    case 0xD5:
+    {
+        SP.setWord(SP.getWord()-1);
+        DE.higher = mmu->readByte(SP.getWord()-1);
+        SP.setWord(SP.getWord()-2);
+        DE.lower = mmu->readByte(SP.getWord());
+        SP.setWord(SP.getWord()-2);;
+        return 4;
+    }
+    // SUB d8
+    case 0xD6:
+    {
+        // A.lower -= d8; // don't know how to get d8
+        return 2;
+    }
+    // RST 2
+    case 0xD7:
+    {
+        return 4;
+    }
+    // RET C
+    case 0xD8:
+    {
+        if (CPU::getCarryFlag()==1){
+            return 5;
+        } else {
+            return 0;
+        }
+    }
     }
 }
 
