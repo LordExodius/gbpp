@@ -548,7 +548,8 @@ int CPU::executeInstruction(u8 instruction)
         SP.setWord(res);
         CPU::setZeroFlag(SP.getWord() == 0);
         CPU::setSubFlag(1);
-        CPU::setHCarryFlag(res);
+        CPU::setHCarryFlag(CPU::checkHCarry_16(SP.getWord(), -1, res));
+
         return 3;
     // LD C, E
     case 0x4B:
@@ -743,6 +744,7 @@ int CPU::executeInstruction(u8 instruction)
     // data from the absolute address specified by the 16-bit register HL,
     // stores result back into the A register.
     case 0x86:
+        result = AF.higher + mmu->readByte(HL.getWord());
         result, carry_bit = AF.higher + HL.getWord();
         AF.higher = result;
         CPU::setZeroFlag(result == 0);
@@ -808,7 +810,7 @@ int CPU::executeInstruction(u8 instruction)
         CPU::setSubFlag(0);
     // ADC A, A
     case 0x8F:
-        result, carry_bit = AF.higher + AF.lower() + CPU::getCarryFlag();
+        result, carry_bit = AF.higher + AF.lower + CPU::getCarryFlag();
         AF.higher = result;
         CPU::setZeroFlag(result == 0);
         CPU::setSubFlag(0);
@@ -924,7 +926,7 @@ int CPU::executeInstruction(u8 instruction)
         CPU::setSubFlag(1);
     // SBC A, A
     case 0x9F:
-        result, carry_bit = AF.higher + AF.lower() - CPU::getCarryFlag();
+        result, carry_bit = AF.higher + AF.lower - CPU::getCarryFlag();
         AF.higher = result;
         CPU::setZeroFlag(result == 0);
         CPU::setSubFlag(1);
@@ -994,7 +996,7 @@ int CPU::executeInstruction(u8 instruction)
     case 0xAE:
         AF.higher = AF.higher + HL.getWord() - CPU::getCarryFlag();
     case 0xAF:
-        AF.higher = AF.higher + AF.lower() - CPU::getCarryFlag();
+        AF.higher = AF.higher + AF.lower - CPU::getCarryFlag();
     }
 }
 
