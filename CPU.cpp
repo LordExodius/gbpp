@@ -769,7 +769,6 @@ int CPU::executeInstruction(u8 instruction)
         CPU::setHCarryFlag(res);
         AF.higher = res;
         return 1;
-        break;
     }
     // ADD A, C
     case 0x81:
@@ -822,7 +821,7 @@ int CPU::executeInstruction(u8 instruction)
     // stores result back into the A register.
     case 0x86:
     {
-        int result, carry_bit = AF.higher + HL.getWord();
+        int result, carry_bit = AF.higher + mmu->readByte(HL.getWord());
         AF.higher = result;
         CPU::setZeroFlag(result == 0);
         CPU::setSubFlag(0);
@@ -897,7 +896,7 @@ int CPU::executeInstruction(u8 instruction)
     // and stores the result back into the A register.
     case 0x8E:
     {
-        int result, carry_bit = AF.higher + HL.getWord() + CPU::getCarryFlag();
+        int result, carry_bit = AF.higher + mmu->readByte(HL.getWord()) + CPU::getCarryFlag();
         AF.higher = result;
         CPU::setZeroFlag(result == 0);
         CPU::setSubFlag(0);
@@ -970,7 +969,7 @@ int CPU::executeInstruction(u8 instruction)
     // and stores the result back into the A register.
     case 0x96:
     {
-        int result, carry_bit = AF.higher - HL.getWord();
+        int result, carry_bit = AF.higher - mmu->readByte(HL.getWord());
         AF.higher = result;
         CPU::setZeroFlag(result == 0);
         CPU::setSubFlag(1);
@@ -1045,7 +1044,7 @@ int CPU::executeInstruction(u8 instruction)
     // and stores the result back into the A register.
     case 0x9E:
     {
-        int result, carry_bit = AF.higher + HL.getWord() - CPU::getCarryFlag();
+        int result, carry_bit = AF.higher + mmu->readByte(HL.getWord()) - CPU::getCarryFlag();
         AF.higher = result;
         CPU::setZeroFlag(result == 0);
         CPU::setSubFlag(1);
@@ -1081,50 +1080,92 @@ int CPU::executeInstruction(u8 instruction)
     // AND A, L
     case 0xA5:
         AF.higher = AF.higher - HL.lower;
-        break;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setHCarryFlag(1);
+        return 1;
     // AND A, (HL)
     // Performs a bitwise AND operation between
     // the 8-bit A register and data from the absolute address specified by the 16-bit register HL,
     // and stores the result back into the A register.
     case 0xA6:
-        AF.higher = AF.higher - HL.getWord();
-        break;
+        AF.higher = AF.higher - mmu->readByte(HL.getWord());
+        CPU::setZeroFlag(AF.lower==0);
+        return 2;
     // AND A, A
     case 0xA7:
         AF.higher = AF.higher - AF.higher;
-        break;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(1);
+        CPU::setCarryFlag(0);
+        return 1;
     // XOR A, B
     case 0xA8:
-        AF.higher = AF.higher - BC.higher - CPU::getCarryFlag();
-        break;
+        AF.higher = AF.higher ^ BC.higher;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
     // XOR A, C
     case 0xA9:
-        AF.higher = AF.higher - BC.lower - CPU::getCarryFlag();
-        break;
+        AF.higher = AF.higher ^ BC.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
     // XOR A, D
     case 0xAA:
-        AF.higher = AF.higher + DE.higher - CPU::getCarryFlag();
-        break;
+        AF.higher = AF.higher ^ DE.higher;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
     // XOR A, E
     case 0xAB:
-        AF.higher = AF.higher + DE.lower - CPU::getCarryFlag();
-        break;
+        AF.higher = AF.higher ^ DE.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
     // XOR A, H
     case 0xAC:
-        AF.higher = AF.higher + HL.higher - CPU::getCarryFlag();
-        break;
+        AF.higher = AF.higher ^ HL.higher;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
     // XOR A, L
     case 0xAD:
-        AF.higher = AF.higher + HL.lower - CPU::getCarryFlag();
-        break;
+        AF.higher = AF.higher ^ HL.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
     // XOR (HL)
     // Performs a bitwise XOR operation between
     // the 8-bit A register and data from the absolute address specified by the 16-bit register HL,
     // and stores the result back into the A register.
     case 0xAE:
-        AF.higher = AF.higher + HL.getWord() - CPU::getCarryFlag();
+        AF.higher = AF.higher ^ mmu->readByte(HL.getWord());
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 2;
+    // XOR A,A
     case 0xAF:
-        AF.higher = AF.higher + AF.lower - CPU::getCarryFlag();
+        AF.higher = AF.higher ^ AF.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
     }
 }
 
