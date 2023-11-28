@@ -1,9 +1,9 @@
 #include <iostream>
 
-// #include "CPU.h"
+#include "CPU.h"
 #include "MMU.h"
 #include "Cartridge.h"
-// #include "Emulator.h"
+#include "Emulator.h"
 #include "Graphics.h"
 
 // Unit Testing
@@ -31,6 +31,7 @@ TEST_CASE("Run main gameplay loop") {
     Emulator emu("Tetris.gb");
     while (true) {
         emu.loop();
+        while (std::cin.get() != '\n') {};
     }
 }
 

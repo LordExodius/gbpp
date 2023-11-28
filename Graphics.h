@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "Cartridge.h"
 #include "MMU.h"
-// #include "CPU.h"
+#include "CPU.h"
 
 class Graphics {
     public:

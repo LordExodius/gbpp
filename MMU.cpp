@@ -9,10 +9,10 @@ u8 MMU::readByte(u16 location) {
 }
 
 void MMU::writeByte(u16 location, u8 byte) {
-    if (location == 0xFF04) {
-        memory[location] = 0x00;
-    }
-    else if ((location >= 0xE000) && (location < 0xFE00)) {
+    // if (location == 0xFF04) {
+    //     memory[location] = 0x00;
+    // }
+    if ((location >= 0xE000) && (location < 0xFE00)) {
         writeByte(location - 0x2000, byte);
         memory[location] = byte;
     }

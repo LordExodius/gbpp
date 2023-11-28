@@ -1,5 +1,6 @@
 #include "Graphics.h"
 #include <iostream>
+#include <bitset>
 
 Graphics::Graphics(Cartridge* cartridge, MMU* mmu) : window(sf::VideoMode(160, 144), "Gameboy Emulator") {
     // this->cpu = cpu;

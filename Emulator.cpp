@@ -1,10 +1,11 @@
 #include "Emulator.h"
+#include <iostream>
+#include <fstream>
 
 Emulator::Emulator(const char *fileName): cpu(&mmu) {
     printf("Loading %s\n", fileName);
     cartridge.loadCartridge(fileName);
     run();
-    
 }
 
 void Emulator::run() {
@@ -15,16 +16,24 @@ Emulator::~Emulator() {
 }
 
 void Emulator::loop() {
+    std::fstream logfile;
+    logfile.open("log.txt", std::ios::out);
     int cyclesPassed = 0;
     while (cyclesPassed < CYCLES_PER_FRAME) {
-        int opCode = cpu.getInstruction();
+        u8 opCode = cpu.getInstruction();
         int cycles = cpu.executeInstruction(opCode);
+
+        // print opcode and cycles
+        printf("PC 0x%04X OPCODE: %02X CYCLES: %d\n", opCode, cpu.getPC(), cycles);
+        logfile <<"PC 0x" << std::hex << (int)cpu.getPC() << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
+
         cpu.updateTimer(cycles);
         cyclesPassed += cycles;
         // UPDATE GRAPHICS WITH CYCLES
         // CHECK AND SERVICE INTERRUPTS
     }
     // RENDER GRAPHICS
+    logfile.close();
 }
 
 void Emulator::handleInterrupts() {
