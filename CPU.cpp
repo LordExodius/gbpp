@@ -215,21 +215,25 @@ int CPU::executeInstruction(u8 instruction)
     case 0x01:
         BC.lower = mmu->readByte(PC.getWord() + 1);
         BC.higher = mmu->readByte(PC.getWord() + 2);
+        PC.setWord(PC.getWord() + 3);
         return 3;
     // LD DE, u16
     case 0x11:
-        DE.lower = mmu->readByte(DE.getWord() + 1);
-        DE.higher = mmu->readByte(DE.getWord() + 2);
+        DE.lower = mmu->readByte(PC.getWord() + 1);
+        DE.higher = mmu->readByte(PC.getWord() + 2);
+        PC.setWord(PC.getWord() + 3);
         return 3;
     // LD HL, u16
     case 0x21:
-        HL.lower = mmu->readByte(HL.getWord() + 1);
-        HL.higher = mmu->readByte(HL.getWord() + 2);
+        HL.lower = mmu->readByte(PC.getWord() + 1);
+        HL.higher = mmu->readByte(PC.getWord() + 2);
+        PC.setWord(PC.getWord() + 3);
         return 3;
     // LD SP, u16
     case 0x31:
-        SP.lower = mmu->readByte(SP.getWord() + 1);
-        SP.higher = mmu->readByte(SP.getWord() + 2);
+        SP.lower = mmu->readByte(PC.getWord() + 1);
+        SP.higher = mmu->readByte(PC.getWord() + 2);
+        PC.setWord(PC.getWord() + 3);
         return 3;
     // LD B, C
     case 0x41:
