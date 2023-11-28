@@ -179,10 +179,15 @@ int CPU::executeInstruction(u8 instruction)
     switch (instruction)
     {
     // NOOP
-    case 0x00:
+    case 0x00:{
+        PC.setWord(PC.getWord() + 1);
         return 1;
+    }
+        
     // STPO ? WTF
-    case 0x10:
+    case 0x10: {
+
+    }
         return 1;
     // JR NZ i8?
     case 0x20:
@@ -467,10 +472,13 @@ int CPU::executeInstruction(u8 instruction)
     case 0x77:
         mmu->writeWord(HL.getWord(), AF.lower);
         return 2;
-    case 0x08:
+    case 0x08: 
+    {
         u16 nn = mmu->readWord(PC.getWord() + 1);
+        PC.setWord(PC.getWord() + 1);
         SP.setWord(nn);
         return 5;
+    }
     // LD C, B
     case 0x48:
         BC.higher = BC.lower;
@@ -905,7 +913,7 @@ int CPU::executeInstruction(u8 instruction)
     // ADC A, A
     case 0x8F:
     {
-        int result, carry_bit = AF.higher + AF.lower() + CPU::getCarryFlag();
+        int result, carry_bit = AF.higher + AF.lower + CPU::getCarryFlag();
         AF.higher = result;
         CPU::setZeroFlag(result == 0);
         CPU::setSubFlag(0);
@@ -1053,7 +1061,7 @@ int CPU::executeInstruction(u8 instruction)
     // SBC A, A
     case 0x9F:
     {
-        int result, carry_bit = AF.higher + AF.lower() - CPU::getCarryFlag();
+        int result, carry_bit = AF.higher + AF.lower - CPU::getCarryFlag();
         AF.higher = result;
         CPU::setZeroFlag(result == 0);
         CPU::setSubFlag(1);
