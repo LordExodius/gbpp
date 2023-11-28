@@ -1191,6 +1191,70 @@ int CPU::executeInstruction(u8 instruction)
         CPU::setHCarryFlag(0);
         CPU::setCarryFlag(0);
         return 1;
+    // OR A, B
+    case 0xB0:
+        AF.lower |= BC.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
+    // OR A, C
+    case 0xB1:
+        AF.lower |= BC.higher;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
+    // OR A, D
+    case 0xB2:
+        AF.lower |= DE.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
+    // OR A, E
+    case 0xB3:
+        AF.lower |= DE.higher;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
+    // OR A, H
+    case 0xB4:
+        AF.lower |= HL.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
+    // OR A, L
+    case 0xB5:
+        AF.lower |= HL.higher;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
+    // OR A, (HL)
+    case 0xB6:
+        AF.lower |= mmu->readByte(HL.getWord());
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 2;
+    // OR A, A
+    case 0xB7:
+        AF.lower |= AF.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(0);
+        CPU::setCarryFlag(0);
+        return 1;
     }
 }
 
