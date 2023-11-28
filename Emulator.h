@@ -7,6 +7,9 @@
 #include "CPU.h"
 #include "Register.h"
 
+#define FRAMES_PER_SECOND 60
+#define CYCLES_PER_FRAME CPU_CLOCK_SPEED/FRAMES_PER_SECOND
+
 class Emulator {
 private:
     Cartridge cartridge; ///< Cartridge object
@@ -23,6 +26,8 @@ public:
      * @brief Destroy the Emulator object
      */
     ~Emulator();
+
+    void loop();
 };
 
 #endif

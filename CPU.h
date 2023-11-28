@@ -5,8 +5,6 @@
 #include "Register.h"
 #include "MMU.h"
 
-#define CPU_CLOCK_SPEED 4194304
-
 #define ZERO_VALUE 0x80
 #define SUB_VALUE 0x40
 #define HALF_VALUE 0x20
@@ -71,6 +69,7 @@ public:
     bool checkCarry_16(u16 arg1, u16 arg2);
 
     // Instructions
+    u8 getInstruction();
     /**
      * @brief Given an 8-bit CPU instruction, execute the associated Opcode and update flags as necessary.
      * 

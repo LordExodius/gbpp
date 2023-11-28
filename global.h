@@ -3,6 +3,8 @@
 
 #define DEBUG false
 
+#define CPU_CLOCK_SPEED 4194304
+
 #include <cstdint>
 
 using u8 = std::uint8_t;

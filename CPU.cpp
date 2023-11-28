@@ -141,6 +141,13 @@ void CPU::updateTimer(int instructionCycles) { // M CYCLES
     }
 }
 
+u8 CPU::getInstruction() {
+    u8 opcode = mmu->readByte(PC.getWord());
+    // update PC
+    PC.setWord(PC.getWord() + 1);
+    return opcode;
+}
+
 int CPU::executeInstruction(u8 instruction){
     switch (instruction)
         {
@@ -706,7 +713,7 @@ void CPU::add_a(u8 arg) {
     CPU::setZeroFlag(!res);
     CPU::setSubFlag(false);
     CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, BC.higher, res));
-    // CPU::setCarryFlag(CPU::)
+    // CPU::setCarryFlag(CPU::) 
     AF.higher = res;
 }
 // DEBUG
