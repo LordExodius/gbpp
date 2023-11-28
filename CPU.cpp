@@ -1060,40 +1060,65 @@ int CPU::executeInstruction(u8 instruction)
     // AND A, B: Bitwise AND
     case 0xA0:
         AF.higher &= BC.higher;
-        break;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(1);
+        CPU::setCarryFlag(0);
+        return 1;
     // AND A, C
     case 0xA1:
-        AF.higher = AF.higher and BC.lower;
-        break;
+        AF.higher &= BC.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(1);
+        CPU::setCarryFlag(0);
+        return 1;
     // AND A, D
     case 0xA2:
-        AF.higher = AF.higher - DE.higher;
-        break;
+        AF.higher &= DE.higher;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(1);
+        CPU::setCarryFlag(0);
+        return 1;
     // AND A, E
     case 0xA3:
-        AF.higher = AF.higher - DE.lower;
-        break;
+        AF.higher &= DE.lower;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(1);
+        CPU::setCarryFlag(0);
+        return 1;
     // AND A, H
     case 0xA4:
-        AF.higher = AF.higher - HL.higher;
-        break;
+        AF.higher &= HL.higher;
+        CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(1);
+        CPU::setCarryFlag(0);
+        return 1;
     // AND A, L
     case 0xA5:
-        AF.higher = AF.higher - HL.lower;
+        AF.higher &=  HL.lower;
         CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
         CPU::setHCarryFlag(1);
+        CPU::setCarryFlag(0);
         return 1;
     // AND A, (HL)
     // Performs a bitwise AND operation between
     // the 8-bit A register and data from the absolute address specified by the 16-bit register HL,
     // and stores the result back into the A register.
     case 0xA6:
-        AF.higher = AF.higher - mmu->readByte(HL.getWord());
+        AF.higher &= mmu->readByte(HL.getWord());
         CPU::setZeroFlag(AF.lower==0);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(1);
+        CPU::setCarryFlag(0);
         return 2;
     // AND A, A
     case 0xA7:
-        AF.higher = AF.higher - AF.higher;
+        AF.higher &= AF.higher;
         CPU::setZeroFlag(AF.lower==0);
         CPU::setSubFlag(0);
         CPU::setHCarryFlag(1);
