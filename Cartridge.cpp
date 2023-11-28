@@ -80,6 +80,8 @@ bool Cartridge::verifyChecksum() {
 }
 
 u8 Cartridge::getMemory(u16 address) {
+    printf("Reading memory at address: 0x%04X\n", address);
+    printf("File size: %ld\n", fileSize);
     if (address < fileSize) {
         return gameData[address];
     } else {
