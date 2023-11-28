@@ -144,7 +144,7 @@ int CPU::executeInstruction(u8 instruction){
                 CPU::setZeroFlag(res==0);
                 CPU::setSubFlag(0);
                 CPU::setHCarryFlag(CPU::checkHCarry_8(AF.higher, BC.higher, res));
-                // CPU::setCarryFlag(CPU::)
+                CPU::setCarryFlag(CPU::checkHCarry_16(AF.higher, BC.higher, res));
                 AF.higher = res;
                 return 1;
             // ADD A, C
