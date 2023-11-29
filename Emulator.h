@@ -1,3 +1,12 @@
+/**
+ * @class Emulator
+ * @brief Main game boy emulator
+ * @author Ameena Naqvi
+ * The `Emulator` class encapsulates the functionality required to load and execute a specific Game Boy game cartridge.
+ * The `Emulator` class follows a structured design, with the `loop()` function serving as the main
+ * emulation loop. This loop continuously processes CPU instructions, updates internal timers, and
+ * renders graphics, all while simulating the execution of a frame within the Game Boy emulation context.
+ **/
 #ifndef EMULATOR_H
 #define EMULATOR_H
 
@@ -5,7 +14,6 @@
 #include "Cartridge.h"
 #include "MMU.h"
 #include "CPU.h"
-#include "Register.h"
 #include "Graphics.h"
 
 #define FRAMES_PER_SECOND 60
@@ -41,7 +49,18 @@ public:
      * providing a visual representation of the current emulation state.
      */
     void loop();
+    /**
+     * @brief Handles interrupts during emulation.
+     * This function is responsible for checking and processing interrupts that may occur during
+     * the execution of the emulation loop. It ensures proper handling of interrupts to maintain
+     * the accuracy of the emulation.
+     */
     void handleInterrupts();
+    /**
+     * @brief Reads a byte from the specified memory address.
+     * @param addr Memory address from which to read the byte.
+     * @return The byte read from the specified memory address.
+     */
     u8 readMemory(u16 addr);
 
     /**
