@@ -79,6 +79,7 @@ public:
     int executeInstruction(u8 instruction);
 
     void add_a(u8 arg);
+    void sub_a(u8 arg);
     void add_hl(u16 arg);
     void add_sp(s8 arg);
     void adc();
