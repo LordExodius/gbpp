@@ -32,6 +32,8 @@ private:
     Register PC;    ///< Program Counter.
     Register SP;    ///< Stack Pointer.
 
+    bool IME = false;   ///< Interrupt Master Enable flag.
+
     // Memory
     MMU *mmu;       ///< Pointer to MMU object associated with the emulator.
 

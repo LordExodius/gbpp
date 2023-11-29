@@ -5,11 +5,11 @@
 Emulator::Emulator(const char *fileName): cartridge(fileName), mmu(&cartridge, fileName), cpu(&mmu) {
     printf("Loading %s\n", fileName);
     cpu.dumpRegisters();
-    // run();
+    run();
 }
 
 void Emulator::run() {
-    graphics = new Graphics(&mmu);
+    graphics = new Graphics(&mmu, &cpu);
 }
 
 Emulator::~Emulator() {
@@ -34,7 +34,7 @@ void Emulator::loop() {
         cyclesPassed += cycles;
         while (std::cin.get() != '\n');
         // UPDATE GRAPHICS WITH CYCLES
-        // CHECK AND SERVICE INTERRUPTS
+        handleInterrupts();
     }
     // RENDER GRAPHICS
     logfile.close();

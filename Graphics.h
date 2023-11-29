@@ -7,13 +7,13 @@
 
 class Graphics {
     public:
-        Graphics(MMU* mmu);
+        Graphics(MMU* mmu, CPU* cpu);
         ~Graphics();
         void run();
         void updateGraphics();
         void updateDisplay();
         bool isOpen();
-        std::vector<sf::Uint8> updateArray(int cycles);
+        void updateArray(int cycles);
 
     private:
         int spriteSize;
@@ -32,7 +32,7 @@ class Graphics {
         sf::RenderWindow window;
         sf::Texture texture;
         sf::Sprite sprite;
-        // CPU* cpu;
+        CPU* cpu;
         MMU* mmu;
         sf::Uint8 getPixelColor(u8 pixelValue);
         std::vector<sf::Uint8> updateScanline();

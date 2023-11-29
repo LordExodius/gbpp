@@ -2,8 +2,8 @@
 #include <iostream>
 #include <bitset>
 
-Graphics::Graphics(MMU* mmu) : window(sf::VideoMode(160, 144), "Gameboy Emulator") {
-    // this->cpu = cpu;
+Graphics::Graphics(MMU* mmu, CPU* cpu) : window(sf::VideoMode(160, 144), "Gameboy Emulator") {
+    this->cpu = cpu;
     this->mmu = mmu;
     window.setFramerateLimit(60);
     texture.create(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -84,73 +84,68 @@ void Graphics::setInitialDisplay() {
 
 void Graphics::renderTiles() {
     std::vector<sf::Uint8> pixelBuffer(SCREEN_WIDTH * SCREEN_HEIGHT * 4, 255);
-
-    for (int line = 0; line < SCREEN_HEIGHT; line++) {
-        scanLineCounter = line;
-
-        for (int pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
-            u8 xPosition = pixel + scrollX;
-            if (windowEnabled) {
-                if (pixel >= windowX) {
-                    xPosition = pixel - windowX;
-                }
+    for (int pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
+        u8 xPosition = pixel + scrollX;
+        if (windowEnabled) {
+            if (pixel >= windowX) {
+                xPosition = pixel - windowX;
             }
+        }
 
-            // Get tile address
-            u16 tileAddress = backgroundMemory + ((scanLineCounter / 8) * 32) + (xPosition / 8);
-            u16 tileNumber = mmu->readByte(tileAddress);
-            u16 tileLocation = startAddress;
+        // Get tile address
+        u16 tileAddress = backgroundMemory + ((scanLineCounter / 8) * 32) + (xPosition / 8);
+        u16 tileNumber = mmu->readByte(tileAddress);
+        u16 tileLocation = startAddress;
 
-            if (isUnsignedByte) {
-                tileLocation += (tileNumber * 16);
-            } else {
-                tileLocation += ((tileNumber + 128) * 16);
-            }
+        if (isUnsignedByte) {
+            tileLocation += (tileNumber * 16);
+        } else {
+            tileLocation += ((tileNumber + 128) * 16);
+        }
 
-            // Note: each bit contains info for two adjacent pixels
-            u8 line = (scanLineCounter % 8) * 2;
-            u8 pixel1 = mmu->readByte(tileLocation + line);
-            u8 pixel2 = mmu->readByte(tileLocation + line + 1);
+        // Note: each bit contains info for two adjacent pixels
+        u8 line = (scanLineCounter % 8) * 2;
+        u8 pixel1 = mmu->readByte(tileLocation + line);
+        u8 pixel2 = mmu->readByte(tileLocation + line + 1);
 
-            // Get pixel color
-            int colorBit = (xPosition % 8) - 1;
-            colorBit -= 7;
-            colorBit *= -1;
+        // Get pixel color
+        int colorBit = (xPosition % 8) - 1;
+        colorBit -= 7;
+        colorBit *= -1;
 
-            // Combine data to get color id for pixel
-            int colorNum = (pixel2 & (1 << colorBit)) >> colorBit;
-            colorNum <<= 1;
-            colorNum |= (pixel1 & (1 << colorBit)) >> colorBit;
+        // Combine data to get color id for pixel
+        int colorNum = (pixel2 & (1 << colorBit)) >> colorBit;
+        colorNum <<= 1;
+        colorNum |= (pixel1 & (1 << colorBit)) >> colorBit;
 
-            switch(colorNum) {
-                // White
-                case 0:
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4] = 255;
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 1] = 255;
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 2] = 255;
-                    break;
+        switch(colorNum) {
+            // White
+            case 0:
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4] = 255;
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 1] = 255;
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 2] = 255;
+                break;
 
-                // Light grey
-                case 1:
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4] = 0xCC;
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 1] = 0xCC;
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 2] = 0xCC;
-                    break;
+            // Light grey
+            case 1:
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4] = 0xCC;
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 1] = 0xCC;
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 2] = 0xCC;
+                break;
 
-                // Dark grey
-                case 2:
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4] = 0x77;
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 1] = 0x77;
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 2] = 0x77;
-                    break;
-                
-                // Black
-                case 3:
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4] = 0;
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 1] = 0;
-                    pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 2] = 0;
-                    break;
-            }
+            // Dark grey
+            case 2:
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4] = 0x77;
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 1] = 0x77;
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 2] = 0x77;
+                break;
+            
+            // Black
+            case 3:
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4] = 0;
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 1] = 0;
+                pixelBuffer[((line * SCREEN_WIDTH) + pixel) * 4 + 2] = 0;
+                break;
         }
     }
 
@@ -247,7 +242,7 @@ std::vector<sf::Uint8> Graphics::updateScanline() {
     // return scanline;
 }
 
-std::vector<sf::Uint8> Graphics::updateArray(int cycles) {
+void Graphics::updateArray(int cycles) {
     cycleCounter += cycles;
 
     // Reset cycle counter
@@ -261,7 +256,7 @@ std::vector<sf::Uint8> Graphics::updateArray(int cycles) {
         // Set interrupt flag
         if (scanLineCounter == 144) {
             printf("Vblank\n");
-            // setInterrupt(0);
+            cpu->requestInterrupt(0x1);
 
         // Reset scanline counter
         } else if (scanLineCounter > 153) {
@@ -269,11 +264,10 @@ std::vector<sf::Uint8> Graphics::updateArray(int cycles) {
 
         // Vdraw - update scanline array
         } else if (scanLineCounter < 144) {
-            return updateScanline();
+            renderTiles();
         }
     }
-
-    return {};
+    return;
 }
 
 void Graphics::updateDisplay() {
