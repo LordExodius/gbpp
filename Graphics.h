@@ -43,7 +43,7 @@ class Graphics {
          * @return std::vector<sf::Uint8> An array of pixels representing the scanline
          */
         void updateArray(int cycles);
-        sf::RenderWindow window;
+        sf::RenderWindow window; ///< The window of the emulator
 
     private:
         int spriteSize; ///< The size of the sprites, either 8x8 or 8x16
@@ -59,7 +59,6 @@ class Graphics {
         u16 backgroundMemory; ///< The start address of the background memory
         const int SCREEN_WIDTH = 160; ///< The width of the screen
         const int SCREEN_HEIGHT = 144; ///< The height of the screen
-        sf::RenderWindow window; ///< The window of the emulator
         sf::Texture texture; ///< The texture of the emulator
         sf::Sprite sprite; ///< The sprite of the emulator
         CPU* cpu; ///< A pointer to the CPU object
