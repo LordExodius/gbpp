@@ -90,16 +90,57 @@ public:
      */
     int executeInstruction(u8 instruction);
 
-    void add_8(u8 arg);
-    void add_16(u16 arg);
+    /**
+     * @brief Adds arg to the register A, then stores the result in register A.
+     * 
+     * @param arg The value to add to register A.
+     */
+    void add_a(u8 arg);
+
+    /**
+     * @brief Subtracts arg to the register A, then stores the result in register A.
+     * 
+     * @param arg The value to add to register A.
+     */
     void sub_a(u8 arg);
+
+    /**
+     * @brief these are is not implemented???
+     * 
+     * @param arg The value to add to register A.
+     */
     void add_hl(u16 arg);
     void add_sp(s8 arg);
     void adc();
+
+    /**
+     * @brief Increments an 8 bit register.
+     * 
+     * @param reg The register to increment
+     */
     void inc_8(u8 *reg);
+
+    /**
+     * @brief Increments an 16 bit register.
+     * 
+     * @param reg The register to increment
+     */
     void inc_16(Register *reg);
+
+    /**
+     * @brief Decrements an 8 bit register.
+     * 
+     * @param reg The register to decrement.
+     */
     void dec_8(u8 *reg);
-    void dec_16(Register *reg);    void or_a(u8 arg);
+
+    /**
+     * @brief Decrements an 16 bit register.
+     * 
+     * @param reg The register to decrement.
+     */
+    void dec_16(Register *reg);    
+    void or_a(u8 arg);
     void and_a(u8 arg);
     void xor_a(u8 arg);
     void cp(u8 arg);
@@ -108,7 +149,6 @@ public:
     void jp_hl();
     void ret();
     void call();
-
 
     // Timer
     u8 getDivider();
