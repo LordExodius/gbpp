@@ -99,7 +99,8 @@ public:
     void inc_8(u8 *reg);
     void inc_16(Register *reg);
     void dec_8(u8 *reg);
-    void dec_16(Register *reg);    void or_a(u8 arg);
+    void dec_16(Register *reg);    
+    void or_a(u8 arg);
     void and_a(u8 arg);
     void xor_a(u8 arg);
     void cp(u8 arg);
