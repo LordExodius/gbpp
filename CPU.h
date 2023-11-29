@@ -139,15 +139,65 @@ public:
      * 
      * @param reg The register to decrement.
      */
-    void dec_16(Register *reg);    
+    void dec_16(Register *reg);
+
+    /**
+     * @brief OR operation between register A and a given argument.
+     * 
+     * @param arg The value to OR against.
+     */
     void or_a(u8 arg);
+
+    /**
+     * @brief AND operation between register A and a given argument.
+     * 
+     * @param arg The value to AND against.
+     */
     void and_a(u8 arg);
+
+    /**
+     * @brief XOR operation between register A and a given argument.
+     * 
+     * @param arg The value to XOR against.
+     */
     void xor_a(u8 arg);
+
+    /**
+     * @brief CP operation between register A and a given argument.
+     * 
+     * @param arg The value to compare against.
+     */
     void cp(u8 arg);
+
+    /**
+     * @brief POP operation on the given register. Increments the SP.
+     * 
+     * @param reg The register in which to store the popped value.
+     */
     void pop(Register *reg);
+
+    /**
+     * @brief JP operation.
+     * 
+     */
     void jp();
+
+    /**
+     * @brief JP HL operation. Sets the PC to the value of HL.
+     * 
+     */
     void jp_hl();
+
+    /**
+     * @brief RET operation. Sets the PC to the value stored in the memory location SP.
+     * 
+     */
     void ret();
+
+    /**
+     * @brief IDK man.
+     * 
+     */
     void call();
 
     // Timer
