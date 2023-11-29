@@ -85,6 +85,13 @@ public:
     void adc();
     void or_a(u8 arg);
     void and_a(u8 arg);
+    void xor_a(u8 arg);
+    void cp(u8 arg);
+    void pop(Register *reg);
+    void jp();
+    void jp_hl();
+    void ret();
+    void call();
 
 
     // Timer
