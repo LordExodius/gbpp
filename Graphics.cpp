@@ -151,9 +151,8 @@ void Graphics::renderTiles() {
 
     // Update the texture with the entire pixelBuffer
     texture.update(pixelBuffer.data());
-    printf("Pixel buffer data: %d\n", pixelBuffer.data());
+    // printf("Pixel buffer data: %d\n", pixelBuffer.data());
 }
-
 
 void Graphics::run() {
     while (window.isOpen()) {
@@ -244,6 +243,7 @@ std::vector<sf::Uint8> Graphics::updateScanline() {
 
 void Graphics::updateArray(int cycles) {
     cycleCounter += cycles;
+    printf("Cycle counter: %d\n", cycleCounter);
 
     // Reset cycle counter
     if (cycleCounter >= 456) {

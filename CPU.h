@@ -60,6 +60,9 @@ public:
     u16 getPC();
     void setPC(u16 value);
 
+    bool getIME();
+    void setIME(bool value);
+
     // Alt
     void pushStackWord(u16 word);
     void pushStackByte(u8 byte);

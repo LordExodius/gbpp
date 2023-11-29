@@ -73,6 +73,16 @@ void CPU::setPC(u16 value)
     CPU::PC.setWord(value);
 }
 
+bool CPU::getIME()
+{
+    return CPU::IME;
+}
+void CPU::setIME(bool value)
+{
+    CPU::IME = value;
+}
+
+
 void CPU::pushStackWord(u16 word) {
     // Push word to stack and decrement the pointer
     // Decrement push lower byte
@@ -1393,7 +1403,7 @@ int CPU::executeInstruction(u8 instruction)
     case 0xE8:
     {
         signed char byte = CPU::getInstruction();
-        CPU::add_sp(byte);
+        CPU::add_8(byte);
         return 4;
     }
     // JP HL

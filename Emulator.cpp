@@ -10,6 +10,9 @@ Emulator::Emulator(const char *fileName): cartridge(fileName), mmu(&cartridge, f
 
 void Emulator::run() {
     graphics = new Graphics(&mmu, &cpu);
+    while (graphics->window.isOpen()) {
+        loop();
+    }
 }
 
 Emulator::~Emulator() {
@@ -33,36 +36,46 @@ void Emulator::loop() {
         cpu.updateTimer(cycles);
         cyclesPassed += cycles;
         while (std::cin.get() != '\n');
-        // UPDATE GRAPHICS WITH CYCLES
+        graphics->updateArray(cycles);
         handleInterrupts();
     }
-    // RENDER GRAPHICS
+    graphics->updateDisplay();
     logfile.close();
 }
 
 void Emulator::handleInterrupts() {
+    if (!cpu.getIME()) {
+        return;
+    }
+
+    cpu.setIME(false);
     u8 IF = mmu.readByte(0xFF0F);
     u8 IE = mmu.readByte(0xFFFF);
     cpu.pushStackWord(cpu.getPC());
     
     switch (IF & IE) {
         case 0x1: { // VBlank
+            mmu.writeByte(0xFF0F, IF & 0xFE);
             cpu.setPC(0x40);
             break;
         }
         case 0x2: { // LCD
+            mmu.writeByte(0xFF0F, IF & 0xFD);
             cpu.setPC(0x48);
             break;
         }
         case 0x4: { // Timer
+            mmu.writeByte(0xFF0F, IF & 0xFB);
             cpu.setPC(0x50);
             break;
         }
         case 0x8: { // Serial
+            mmu.writeByte(0xFF0F, IF & 0xF7);
             cpu.setPC(0x40);
             break;
         }
         case 0xF: { // Joypad
+            mmu.writeByte(0xFF0F, IF & 0xEF);
             cpu.setPC(0x60);
             break;
         }

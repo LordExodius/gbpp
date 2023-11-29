@@ -14,6 +14,7 @@ class Graphics {
         void updateDisplay();
         bool isOpen();
         void updateArray(int cycles);
+        sf::RenderWindow window;
 
     private:
         int spriteSize;
@@ -29,7 +30,7 @@ class Graphics {
         u16 backgroundMemory;
         const int SCREEN_WIDTH = 160;
         const int SCREEN_HEIGHT = 144;
-        sf::RenderWindow window;
+        
         sf::Texture texture;
         sf::Sprite sprite;
         CPU* cpu;
