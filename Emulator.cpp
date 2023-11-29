@@ -4,7 +4,8 @@
 
 Emulator::Emulator(const char *fileName): cartridge(fileName), mmu(&cartridge, fileName), cpu(&mmu) {
     printf("Loading %s\n", fileName);
-    run();
+    cpu.dumpRegisters();
+    // run();
 }
 
 void Emulator::run() {
@@ -19,15 +20,19 @@ void Emulator::loop() {
     logfile.open("log.txt", std::ios::out);
     int cyclesPassed = 0;
     while (cyclesPassed < CYCLES_PER_FRAME) {
+        u16 PC = cpu.getPC();
+        logfile <<"PC 0x" << std::hex << PC;
+
         u8 opCode = cpu.getInstruction();
         int cycles = cpu.executeInstruction(opCode);
 
         // print opcode and cycles
-        printf("PC 0x%04X OPCODE: %02X CYCLES: %d\n", opCode, cpu.getPC(), cycles);
-        logfile <<"PC 0x" << std::hex << (int)cpu.getPC() - 1 << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
+        printf("PC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
+        logfile << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
 
         cpu.updateTimer(cycles);
         cyclesPassed += cycles;
+        while (std::cin.get() != '\n');
         // UPDATE GRAPHICS WITH CYCLES
         // CHECK AND SERVICE INTERRUPTS
     }

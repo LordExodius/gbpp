@@ -33,7 +33,7 @@ TEST_CASE("Run main gameplay loop") {
     Emulator emu("Tetris.gb");
     while (true) {
         emu.loop();
-        while (std::cin.get() != '\n') {};
+        while (std::cin.get() != '\n');
     }
 }
 

@@ -10,6 +10,7 @@
 
 CPU::CPU(MMU *mmu)
 {
+    printf("Initializing CPU...\n");
     CPU::mmu = mmu;
     // Init values from Pandocs for DMG Gameboy
     CPU::AF.setWord(0x01B0);
@@ -117,6 +118,14 @@ bool CPU::getCarryFlag()
 void CPU::setCarryFlag(bool set)
 {
     CPU::AF.lower = set ? CPU::AF.lower | CARRY_VALUE : CPU::AF.lower & ~CARRY_VALUE;
+}
+
+// Interrupts
+void CPU::requestInterrupt(u8 interrupt)
+{
+    u8 IF = mmu->readByte(0xFF0F);
+    IF |= interrupt;
+    mmu->writeByte(0xFF0F, IF);
 }
 
 // Flag Helpers
@@ -243,10 +252,8 @@ int CPU::executeInstruction(u8 instruction)
     // NOOP
     case 0x00:
     {
-        PC.setWord(PC.getWord() + 1);
         return 1;
     }
-
     // STPO ? WTF
     case 0x10:
     {
@@ -254,10 +261,22 @@ int CPU::executeInstruction(u8 instruction)
         return 1;
     // JR NZ i8?
     case 0x20:
-        return 1;
+        if(!getZeroFlag())
+        {
+            signed char step = CPU::getInstruction();
+            PC.setWord(PC.getWord() + step);
+            return 3;
+        } 
+        return 2;
     // JR NC i8?
     case 0x30:
-        return 1;
+        if(!getCarryFlag())
+        {
+            signed char step = CPU::getInstruction();
+            PC.setWord(PC.getWord() + step);
+            return 3;
+        } 
+        return 2;
     // LD B, B
     case 0x40:
         BC.lower = BC.lower;
@@ -276,27 +295,23 @@ int CPU::executeInstruction(u8 instruction)
         return 2;
     // LD BC,u16
     case 0x01:
-        BC.lower = mmu->readByte(PC.getWord() + 1);
-        BC.higher = mmu->readByte(PC.getWord() + 2);
-        PC.setWord(PC.getWord() + 3);
+        BC.lower = CPU::getInstruction();
+        BC.higher = CPU::getInstruction();
         return 3;
     // LD DE, u16
     case 0x11:
-        DE.lower = mmu->readByte(PC.getWord() + 1);
-        DE.higher = mmu->readByte(PC.getWord() + 2);
-        PC.setWord(PC.getWord() + 3);
+        DE.lower = CPU::getInstruction();
+        DE.higher = CPU::getInstruction();
         return 3;
     // LD HL, u16
     case 0x21:
-        HL.lower = mmu->readByte(PC.getWord() + 1);
-        HL.higher = mmu->readByte(PC.getWord() + 2);
-        PC.setWord(PC.getWord() + 3);
+        HL.lower = CPU::getInstruction();
+        HL.higher = CPU::getInstruction();
         return 3;
     // LD SP, u16
     case 0x31:
-        SP.lower = mmu->readByte(PC.getWord() + 1);
-        SP.higher = mmu->readByte(PC.getWord() + 2);
-        PC.setWord(PC.getWord() + 3);
+        SP.lower = CPU::getInstruction();
+        SP.higher = CPU::getInstruction();
         return 3;
     // LD B, C
     case 0x41:
@@ -482,7 +497,7 @@ int CPU::executeInstruction(u8 instruction)
         return 2;
     // LD B,u8
     case 0x06:
-        BC.lower = mmu->readByte(PC.getWord() + 1);
+        BC.lower = CPU::getInstruction();
         return 2;
     // RLCA
     case 0x07:
@@ -702,6 +717,22 @@ int CPU::executeInstruction(u8 instruction)
     case 0x7D:
         AF.lower = HL.higher;
         return 1;
+    // LD C, u8
+    case 0x0E:
+        BC.higher = CPU::getInstruction();
+        return 2;
+    // LD E, u8
+    case 0x1E:
+        DE.higher = CPU::getInstruction();
+        return 2;
+    // LD L, u8
+    case 0x2E:
+        HL.higher = CPU::getInstruction();
+        return 2;
+    // LD A, u8
+    case 0x3E:
+        AF.lower = CPU::getInstruction();
+        return 2;
     // LD C, (HL)
     case 0x4E:
         BC.higher = mmu->readByte(HL.getWord());
@@ -1294,6 +1325,9 @@ int CPU::executeInstruction(u8 instruction)
             return 3;
         }
     }
+    default:
+        printf("unkown opcode %02X\n", instruction);
+        return 1;
     }
 }
 
