@@ -28,14 +28,6 @@ private:
     GBHeader getHeader(u8 *gameData); 
 
     /**
-     * @brief Get the size of the ROM file in bytes.
-     * 
-     * @param gameFile A string containing the name of the ROM file.
-     * @return A long value representing the size of the ROM file in bytes.
-     */
-    long getFileSize(std::string gameFile);  
-
-    /**
      * @brief Verifies the checksum of the ROM file to ensure the game files 
      * are not corrupted.
      * 
@@ -46,12 +38,27 @@ public:
     /**
      * @brief Constructor for Cartridge object
      */
-    Cartridge();
+    Cartridge(std::string gameFile);
 
     /**
      * @brief Destroy the Cartridge object
      */
     ~Cartridge();
+
+    /**
+     * @brief Get the size of the ROM file in bytes.
+     * 
+     * @param gameFile A string containing the name of the ROM file.
+     * @return A long value representing the size of the ROM file in bytes.
+     */
+    long getFileSize(std::string gameFile);  
+
+    /**
+     * @brief Getter method for gameData.
+     * 
+     * @return A pointer to the ROM file data as an array of bytes.
+    */
+    u8 *getGameData();
 
     /**
      * @brief Gets a byte of memory at the specified address.

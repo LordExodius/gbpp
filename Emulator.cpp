@@ -2,9 +2,8 @@
 #include <iostream>
 #include <fstream>
 
-Emulator::Emulator(const char *fileName): cpu(&mmu) {
+Emulator::Emulator(const char *fileName): cartridge(fileName), mmu(&cartridge, fileName), cpu(&mmu) {
     printf("Loading %s\n", fileName);
-    cartridge.loadCartridge(fileName);
     run();
 }
 
