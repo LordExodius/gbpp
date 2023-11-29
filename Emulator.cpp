@@ -8,7 +8,7 @@ Emulator::Emulator(const char *fileName): cartridge(fileName), mmu(&cartridge, f
 }
 
 void Emulator::run() {
-    // graphics = new Graphics(&cpu, &cartridge, &mmu);
+    graphics = new Graphics(&mmu);
 }
 
 Emulator::~Emulator() {
