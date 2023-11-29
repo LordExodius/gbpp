@@ -84,6 +84,7 @@ public:
     void add_sp(s8 arg);
     void adc();
     void or_a(u8 arg);
+    void and_a(u8 arg);
 
 
     // Timer

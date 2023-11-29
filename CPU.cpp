@@ -1008,70 +1008,35 @@ int CPU::executeInstruction(u8 instruction)
     }
     // AND A, B: Bitwise AND
     case 0xA0:
-        AF.lower &= BC.lower;
-        CPU::setZeroFlag(AF.lower == 0);
-        CPU::setSubFlag(0);
-        CPU::setHCarryFlag(1);
-        CPU::setCarryFlag(0);
+        CPU::and_a(BC.lower);
         return 1;
     // AND A, C
     case 0xA1:
-        AF.lower &= BC.higher;
-        CPU::setZeroFlag(AF.lower == 0);
-        CPU::setSubFlag(0);
-        CPU::setHCarryFlag(1);
-        CPU::setCarryFlag(0);
+        CPU::and_a(BC.higher);
         return 1;
     // AND A, D
     case 0xA2:
-        AF.lower &= DE.lower;
-        CPU::setZeroFlag(AF.lower == 0);
-        CPU::setSubFlag(0);
-        CPU::setHCarryFlag(1);
-        CPU::setCarryFlag(0);
+        CPU::and_a(DE.lower);
         return 1;
     // AND A, E
     case 0xA3:
-        AF.lower &= DE.higher;
-        CPU::setZeroFlag(AF.lower == 0);
-        CPU::setSubFlag(0);
-        CPU::setHCarryFlag(1);
-        CPU::setCarryFlag(0);
+        CPU::and_a(DE.higher);
         return 1;
     // AND A, H
     case 0xA4:
-        AF.lower &= HL.lower;
-        CPU::setZeroFlag(AF.lower == 0);
-        CPU::setSubFlag(0);
-        CPU::setHCarryFlag(1);
-        CPU::setCarryFlag(0);
+        CPU::and_a(HL.lower);
         return 1;
     // AND A, L
     case 0xA5:
-        AF.lower &= HL.higher;
-        CPU::setZeroFlag(AF.lower == 0);
-        CPU::setSubFlag(0);
-        CPU::setHCarryFlag(1);
-        CPU::setCarryFlag(0);
+        CPU::and_a(HL.higher);
         return 1;
     // AND A, (HL)
-    // Performs a bitwise AND operation between
-    // the 8-bit A register and data from the absolute address specified by the 16-bit register HL,
-    // and stores the result back into the A register.
     case 0xA6:
-        AF.lower &= mmu->readByte(HL.getWord());
-        CPU::setZeroFlag(AF.lower == 0);
-        CPU::setSubFlag(0);
-        CPU::setHCarryFlag(1);
-        CPU::setCarryFlag(0);
+        CPU::and_a(mmu->readByte(HL.getWord()));
         return 2;
     // AND A, A
     case 0xA7:
-        AF.lower &= AF.lower;
-        CPU::setZeroFlag(AF.lower == 0);
-        CPU::setSubFlag(0);
-        CPU::setHCarryFlag(1);
-        CPU::setCarryFlag(0);
+        CPU::and_a(AF.lower);
         return 1;
     // XOR A, B
     case 0xA8:
@@ -1453,6 +1418,15 @@ void CPU::or_a(u8 arg)
     CPU::setZeroFlag(AF.lower == 0);
     CPU::setSubFlag(0);
     CPU::setHCarryFlag(0);
+    CPU::setCarryFlag(0);
+}
+
+void CPU::and_a(u8 arg)
+{
+    AF.lower &= arg;
+    CPU::setZeroFlag(AF.lower == 0);
+    CPU::setSubFlag(0);
+    CPU::setHCarryFlag(1);
     CPU::setCarryFlag(0);
 }
 // DEBUG
