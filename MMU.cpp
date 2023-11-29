@@ -1,8 +1,9 @@
 #include "MMU.h"
+#include <cstring>
 
 MMU::MMU(Cartridge *cartridge, std::string gameFile) {
     // Load ROM file into memory
-    memcpy(memory, cartridge->getGameData(), cartridge->getFileSize(gameFile));
+    std::memcpy(memory, cartridge->getGameData(), cartridge->getFileSize(gameFile));
 }
 
 u8 MMU::readByte(u16 location) {

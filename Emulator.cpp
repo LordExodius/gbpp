@@ -24,7 +24,7 @@ void Emulator::loop() {
 
         // print opcode and cycles
         printf("PC 0x%04X OPCODE: %02X CYCLES: %d\n", opCode, cpu.getPC(), cycles);
-        logfile <<"PC 0x" << std::hex << (int)cpu.getPC() << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
+        logfile <<"PC 0x" << std::hex << (int)cpu.getPC() - 1 << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
 
         cpu.updateTimer(cycles);
         cyclesPassed += cycles;
@@ -62,4 +62,8 @@ void Emulator::handleInterrupts() {
             break;
         }
     }
+}
+
+u8 Emulator::readMemory(u16 addr) {
+    return mmu.readByte(addr);
 }

@@ -50,8 +50,6 @@ CPU::CPU(MMU *mmu)
     mmu->writeByte(0xFF4A, 0x00);
     mmu->writeByte(0xFF4B, 0x00);
     mmu->writeByte(0xFFFF, 0x00);
-
-
 }
 
 CPU::~CPU() {}
