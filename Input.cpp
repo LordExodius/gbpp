@@ -8,10 +8,8 @@ Input::Input(MMU& mmu) : mmu(mmu){
     // Buttonn key mappings
     buttonKeyMappings['1'] = 0; // A
     buttonKeyMappings['2'] = 1; // B
-
-    // Find alternate keys? Doesn't really work too well on the keyboard
-    buttonKeyMappings['\n'] = 2; // Map Start to Enter
-    buttonKeyMappings[' '] = 3; // Map Select to Spacebar
+    buttonKeyMappings['p'] = 2; // Map Start to p
+    buttonKeyMappings['o'] = 3; // Map Select to o
 
     // Direction key mappings
     directionKeyMappings['a'] = 1; // Left
@@ -56,4 +54,7 @@ u8 Input::getDirectionKeysState() {
 
 void Input::updateJoypadRegister() {
     mmu.writeByte(0xFF00, (getDirectionKeysState() << 4) | getButtonKeysState());
+}
+
+Input::~Input() {
 }
