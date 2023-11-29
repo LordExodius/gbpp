@@ -103,7 +103,9 @@ public:
      * 
      * @param arg The value to add to register A.
      */
-    void add_a(u8 arg);
+    void add_8(u8 arg);
+
+    void add_16(u16 arg);
 
     /**
      * @brief Subtracts arg to the register A, then stores the result in register A.

@@ -62,7 +62,7 @@ class Graphics {
         sf::RenderWindow window; ///< The window of the emulator
         sf::Texture texture; ///< The texture of the emulator
         sf::Sprite sprite; ///< The sprite of the emulator
-        // CPU* cpu; ///< A pointer to the CPU object
+        CPU* cpu; ///< A pointer to the CPU object
         MMU* mmu; ///< A pointer to the MMU object
 
         /**
