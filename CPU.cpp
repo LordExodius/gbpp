@@ -1429,7 +1429,7 @@ int CPU::executeInstruction(u8 instruction)
     // RET NZ
     case 0xC0:
     {
-        if (CPU::getZeroFlag()==1){
+        if (CPU::getZeroFlag()==0){
             // The contents of the address specified by the stack pointer SP are loaded in the lower-order byte of PC
             PC.lower = mmu->readByte(SP.getWord());
             // The contents of SP are incremented by 1.
@@ -1443,7 +1443,8 @@ int CPU::executeInstruction(u8 instruction)
     }
     // POP BC
     case 0xC1:
-        BC.lower = mmu->readByte(SP.getWord());
+        BC.lower = mmu->readWord(SP.getWord() + 1);
+        SP.setWord(SP.getWord() + 3);
         return 3; 
     // JP NZ, u16 -- REVIEW
     case 0xC2:
@@ -1533,8 +1534,8 @@ int CPU::executeInstruction(u8 instruction)
     // POP DE
     case 0xD1:
     {
-        DE.lower = mmu->readByte(SP.getWord());
-        SP.setWord(SP.getWord() + 1);
+        DE.lower = mmu->readWord(SP.getWord() + 1);
+        SP.setWord(SP.getWord() + 3);
         DE.higher = mmu->readByte(SP.getWord());
         return 3;
     }
