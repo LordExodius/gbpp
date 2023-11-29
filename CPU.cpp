@@ -1377,7 +1377,8 @@ int CPU::executeInstruction(u8 instruction)
     // AND d8
     case 0xE6:
     {
-        CPU::and_a(dummy_val);// what to repalce for u8?
+        u8 byte = CPU::getInstruction();
+        CPU::and_a(byte);
         CPU::setSubFlag(0);
         CPU::setHCarryFlag(1);
         CPU::setCarryFlag(0);
@@ -1391,7 +1392,8 @@ int CPU::executeInstruction(u8 instruction)
     // ADD SP, s8
     case 0xE8:
     {
-        CPU::add_sp(dummy_s8); // what to replace for s8?
+        signed char byte = CPU::getInstruction();
+        CPU::add_sp(byte);
         return 4;
     }
     // JP HL
@@ -1403,14 +1405,18 @@ int CPU::executeInstruction(u8 instruction)
     // LD (a16), A
     case 0xEA:
     {
-        // don't know how to:
+        u8 lower = CPU::getInstruction();
+        u8 higher = CPU::getInstruction();
+        u16 addr = (higher << 8) | lower;
+        mmu->writeByte(addr, AF.lower);
         // Store the contents of register A in the internal RAM or register specified by the 16-bit immediate operand a16.
         return 4;
     }
     // XOR d8
     case 0xEE:
     {
-        CPU::xor_a(dummy_d8); // what to replace for d8?
+        u8 byte = CPU::getInstruction();
+        CPU::xor_a(byte);
         return 2;
     }
     // RST 5
@@ -1449,7 +1455,8 @@ int CPU::executeInstruction(u8 instruction)
     // OR d8
     case 0xF6:
     {
-        CPU::or_a(dummy_d8); // what to replace for d8?
+        u8 byte = CPU::getInstruction();
+        CPU::or_a(byte); // what to replace for d8?
         return 2;
     }
     // RST 6
@@ -1462,15 +1469,19 @@ int CPU::executeInstruction(u8 instruction)
     {
         // Add the 8-bit signed operand s8 (values -128 to +127) to the stack pointer SP, 
         // and store the result in register pair HL.
-        HL = dummy_s8 + SP.getWord(); // what to replace for s8?
+        signed char byte = CPU::getInstruction();
+        u16 res = SP.getWord() + byte;
+        HL.setWord(res); // what to replace for s8?
+        CPU::setZeroFlag(!res);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(CPU::checkHCarry_16(SP.getWord(), byte, res));
+        CPU::setCarryFlag(CPU::checkCarry_16(SP.getWord(), byte));
         return 3;
     }
     // LD SP, HL
     case 0xF9:
     {
-        SP.lower = mmu->readByte(HL.getWord() + 1);
-        SP.higher = mmu->readByte(HL.getWord() + 2);
-        // SP.setWord(HL.getWord()); // Is this the better way?
+        SP.setWord(HL.getWord());
         return 2;
     }
     // LD A, (a16) -- REVIEW
@@ -1478,18 +1489,23 @@ int CPU::executeInstruction(u8 instruction)
     {
         // Load into register A the contents of the internal RAM or 
         // register specified by the 16-bit immediate operand a16.
+        u8 lower = CPU::getInstruction();
+        u8 higher = CPU::getInstruction();
+        u16 addr = (higher << 8) | lower;
+        AF.lower = mmu->readByte(addr);
         return 4;
     }
     // EI -- REVIEW
     case 0xFB:
     {
-        // confused
+        CPU::IME = true;
         return 1;
     }
     // CP d8
     case 0xFE:
     {
-        CPU::cp(dummy_d8); // what to replace with d8?
+        u8 byte = CPU::getInstruction();
+        CPU::cp(byte);
         return 2;
     }
     // RST 7
