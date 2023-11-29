@@ -1587,14 +1587,15 @@ int CPU::executeInstruction(u8 instruction)
         }
     }
 }
+}
 
 void CPU::add_a(u8 arg)
 {
     u16 res = AF.lower + arg;
     CPU::setZeroFlag(!res);
     CPU::setSubFlag(false);
-    CPU::setHCarryFlag(CPU::checkHCarry_8(AF.lower, BC.higher, res));
-    // CPU::setCarryFlag(CPU::)
+    CPU::setHCarryFlag(CPU::checkHCarry_8(AF.lower, arg, res));
+    CPU::setCarryFlag(CPU::checkCarry_8(AF.lower, arg));
     AF.lower = res;
 }
 // DEBUG
