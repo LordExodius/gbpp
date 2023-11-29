@@ -1201,7 +1201,7 @@ int CPU::executeInstruction(u8 instruction)
     // RET NC
     case 0xD0:
     {
-        if (!CPU::getCarryFlag)
+        if (!CPU::getCarryFlag())
         {
             CPU::ret();
             return 5;
@@ -1220,7 +1220,7 @@ int CPU::executeInstruction(u8 instruction)
     // JP NC, a16
     case 0xD2:
     {
-        if (!CPU::getCarryFlag)
+        if (!CPU::getCarryFlag())
         {
             CPU::jp();
             return 4;
@@ -1233,7 +1233,7 @@ int CPU::executeInstruction(u8 instruction)
     // CALL NC, a16
     case 0xD4:
     {
-        if (CPU::getCarryFlag == 0)
+        if (!CPU::getCarryFlag())
         {
             return 6;
         }

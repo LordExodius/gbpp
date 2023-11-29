@@ -29,22 +29,23 @@
 //     REQUIRE(cart2.loadCartridge("GAJGLSDHGSHL") == false);
 // }
 
-// TEST_CASE("Run main gameplay loop") {
-//     Emulator emu("Tetris.gb");
-//     while (true) {
-//         emu.loop();
-//         while (std::cin.get() != '\n') {};
-//     }
-// }
-
-TEST_CASE("Export memory to file") {
-    std::fstream file;
-    file.open("memory.txt", std::ios::out);
+TEST_CASE("Run main gameplay loop") {
     Emulator emu("Tetris.gb");
-    for (u16 i = 0; i < 0xFFFF; i++) {
-        file << "0x" << std::hex << i << ": 0x" << std::hex << (int)emu.readMemory(i) << "\n";
+    while (true) {
+        emu.loop();
+        while (std::cin.get() != '\n') {};
     }
 }
+
+// TEST_CASE("Export memory to file") {
+//     std::fstream file;
+//     file.open("memory.txt", std::ios::out);
+//     Emulator emu("Tetris.gb");
+//     for (u16 i = 0; i < 0xFFFF; i++) {
+//         file << "0x" << std::hex << i << ": 0x" << std::hex << (int)emu.readMemory(i) << "\n";
+//     }
+//     while (std::cin.get() != '\n') {};
+// }
 // int main(int argc, char *argv[]) {
 //     printf("EMULATOR TESTS\n");
 //     printf("Test 1: User can load game file using command line argument\n");
