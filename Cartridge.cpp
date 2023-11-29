@@ -16,7 +16,6 @@ bool Cartridge::loadCartridge(std::string gameFile) {
 
     if (!fp) {
         printf("Cannot open file.\n");
-        fclose(fp);
         return false;
     }
 
