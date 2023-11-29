@@ -1,6 +1,7 @@
 /**
  * @class Emulator
  * @brief Gameboy Emulator
+ * @author Oscar Yu
  *
  * This is the main emulator class that enables the Gameboy to be run correctly
  * It simulates the behavior of the target system and provides an interface for interacting
@@ -31,11 +32,12 @@ private:
 public:
     /**
      * @brief Constructor for Emulator object
+     * @param fileName name of the gameboy file to be run
      */
     Emulator(const char *fileName);
 
     /**
-     * @brief Destroy the Emulator object
+     * @brief Destroyer for the Emulator object
      */
     ~Emulator();
     /**

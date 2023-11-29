@@ -1,7 +1,7 @@
 /**
  * @class MMU
  * @brief Memory Management Unit for Emulator
- *
+ * @author Lesley Hou
  * This class represents the Memory Management Unit (MMU) for an emulator object.
  * It is responsible for handling memory-related operations, such as reading and writing bytes and words.
  */
