@@ -2,13 +2,12 @@
 #define GRAPHICS_H
 
 #include <SFML/Graphics.hpp>
-#include "Cartridge.h"
 #include "MMU.h"
 #include "CPU.h"
 
 class Graphics {
     public:
-        Graphics(Cartridge* cartridge, MMU* mmu);
+        Graphics(MMU* mmu);
         ~Graphics();
         void run();
         void updateGraphics();
@@ -34,7 +33,7 @@ class Graphics {
         sf::Texture texture;
         sf::Sprite sprite;
         // CPU* cpu;
-        Cartridge* cartridge;
+        MMU* mmu;
         sf::Uint8 getPixelColor(u8 pixelValue);
         std::vector<sf::Uint8> updateScanline();
         void setInitialDisplay();

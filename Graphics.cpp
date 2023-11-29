@@ -2,9 +2,9 @@
 #include <iostream>
 #include <bitset>
 
-Graphics::Graphics(Cartridge* cartridge, MMU* mmu) : window(sf::VideoMode(160, 144), "Gameboy Emulator") {
+Graphics::Graphics(MMU* mmu) : window(sf::VideoMode(160, 144), "Gameboy Emulator") {
     // this->cpu = cpu;
-    this->cartridge = cartridge;
+    this->mmu = mmu;
     window.setFramerateLimit(60);
     texture.create(SCREEN_WIDTH, SCREEN_HEIGHT);
     sprite.setTexture(texture);
@@ -15,15 +15,15 @@ Graphics::Graphics(Cartridge* cartridge, MMU* mmu) : window(sf::VideoMode(160, 1
 
 void Graphics::setInitialDisplay() {
     // Read LCDC register for initial display configuration
-    u8 u8lcdc = cartridge->getMemory(0xFF40);
+    u8 u8lcdc = mmu->readByte(0xFF40);
     std::bitset<8> lcdc(u8lcdc);
     printf("LCDC: %d\n", lcdc);
 
     // Determine visual area and window
-    scrollY = cartridge->getMemory(0xFF42);
-    scrollX = cartridge->getMemory(0xFF43);
-    windowY = cartridge->getMemory(0xFF4A);
-    windowX = cartridge->getMemory(0xFF4B) - 7;
+    scrollY = mmu->readByte(0xFF42);
+    scrollX = mmu->readByte(0xFF43);
+    windowY = mmu->readByte(0xFF4A);
+    windowX = mmu->readByte(0xFF4B) - 7;
 
     printf("Window X: %d\n", windowX);
     printf("Window Y: %d\n", windowY);
@@ -37,7 +37,7 @@ void Graphics::setInitialDisplay() {
     isUnsignedByte = true;
 
     if (lcdc[5] == 1) {
-        if (windowY <= cartridge->getMemory(0xFF44) && windowX <= cartridge->getMemory(0xFF43)) {
+        if (windowY <= mmu->readByte(0xFF44) && windowX <= mmu->readByte(0xFF43)) {
             windowEnabled = true;
         }
     }
@@ -74,9 +74,9 @@ void Graphics::setInitialDisplay() {
 
     // Calculate which tile to draw
     if (windowEnabled) {
-        yPosition = cartridge->getMemory(0xFF44) - windowY;
+        yPosition = mmu->readByte(0xFF44) - windowY;
     } else {
-        yPosition = scrollY + cartridge->getMemory(0xFF44);
+        yPosition = scrollY + mmu->readByte(0xFF44);
     }
 
     u16 tileRow = (yPosition / 8) * 32;
@@ -98,7 +98,7 @@ void Graphics::renderTiles() {
 
             // Get tile address
             u16 tileAddress = backgroundMemory + ((scanLineCounter / 8) * 32) + (xPosition / 8);
-            u16 tileNumber = cartridge->getMemory(tileAddress);
+            u16 tileNumber = mmu->readByte(tileAddress);
             u16 tileLocation = startAddress;
 
             if (isUnsignedByte) {
@@ -109,8 +109,8 @@ void Graphics::renderTiles() {
 
             // Note: each bit contains info for two adjacent pixels
             u8 line = (scanLineCounter % 8) * 2;
-            u8 pixel1 = cartridge->getMemory(tileLocation + line);
-            u8 pixel2 = cartridge->getMemory(tileLocation + line + 1);
+            u8 pixel1 = mmu->readByte(tileLocation + line);
+            u8 pixel2 = mmu->readByte(tileLocation + line + 1);
 
             // Get pixel color
             int colorBit = (xPosition % 8) - 1;
@@ -176,15 +176,15 @@ void Graphics::run() {
 void Graphics::renderSprites() {
     for (int sprite = 0; sprite < 40; sprite++) {
         u8 index = sprite * 4;
-        u8 yPos = cartridge->getMemory(0xFE00 + index) - 16;
-        u8 xPos = cartridge->getMemory(0xFE00 + index + 1) - 8;
-        u8 tileLocation = cartridge->getMemory(0xFE00 + index + 2);
-        u8 attributes = cartridge->getMemory(0xFE00 + index + 3);
+        u8 yPos = mmu->readByte(0xFE00 + index) - 16;
+        u8 xPos = mmu->readByte(0xFE00 + index + 1) - 8;
+        u8 tileLocation = mmu->readByte(0xFE00 + index + 2);
+        u8 attributes = mmu->readByte(0xFE00 + index + 3);
 
         bool yFlip = (attributes & (1 << 6)) != 0;
         bool xFlip = (attributes & (1 << 5)) != 0;
 
-        u8 scanLine = cartridge->getMemory(0xFF44);
+        u8 scanLine = mmu->readByte(0xFF44);
 
         // Does sprite intercept with scanline?
         if ((scanLine >= yPos) && (scanLine < (yPos + spriteSize))) {
@@ -198,8 +198,8 @@ void Graphics::renderSprites() {
 
             line *= 2;
             u16 dataAddress = (0x8000 + (tileLocation * 16)) + line;
-            u8 data1 = cartridge->getMemory(dataAddress);
-            u8 data2 = cartridge->getMemory(dataAddress + 1);
+            u8 data1 = mmu->readByte(dataAddress);
+            u8 data2 = mmu->readByte(dataAddress + 1);
 
             for (int tilePixel = 7; tilePixel >= 0; tilePixel--) {
                 int colorBit = tilePixel;
@@ -239,7 +239,7 @@ std::vector<sf::Uint8> Graphics::updateScanline() {
 
     // for (int pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
     //     u16 offset = startAddress + pixel + (scanLineCounter - 1) * SCREEN_WIDTH;
-    //     scanline[pixel] = cartridge->getMemory(offset);
+    //     scanline[pixel] = mmu->readByte(offset);
     //     int color = getPixelColor(scanline[pixel]);
     //     scanline[pixel] = (color << 16) | (color << 8) | color | (255 << 24); 
     // }
