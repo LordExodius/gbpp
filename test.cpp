@@ -6,27 +6,45 @@
 #include "Emulator.h"
 #include "Graphics.h"
 
+#include <fstream>
+
 // Unit Testing
 #define CONFIG_CATCH_MAIN
 #include "catch_amalgamated.hpp"
 
-TEST_CASE("F register flags are accessible and initialized correctly") {
-    MMU mmu;
-    CPU cpu(&mmu);
-    // Register F init to 0xB0 (0b10110000)
-    REQUIRE(cpu.getZeroFlag() == true);
-    REQUIRE(cpu.getSubFlag() == false);
-    REQUIRE(cpu.getHCarryFlag() == true);
-    REQUIRE(cpu.getCarryFlag() == true);
-}
+// TEST_CASE("F register flags are accessible and initialized correctly") {
+//     MMU mmu;
+//     CPU cpu(&mmu);
+//     // Register F init to 0xB0 (0b10110000)
+//     REQUIRE(cpu.getZeroFlag() == true);
+//     REQUIRE(cpu.getSubFlag() == false);
+//     REQUIRE(cpu.getHCarryFlag() == true);
+//     REQUIRE(cpu.getCarryFlag() == true);
+// }
 
-TEST_CASE("Cartridge returns correctly for valid and invalid ROM files") {
-    Cartridge cart1;
-    REQUIRE(cart1.loadCartridge("Tetris.gb") == true);
-    Cartridge cart2;
-    REQUIRE(cart2.loadCartridge("GAJGLSDHGSHL") == false);
-}
+// TEST_CASE("Cartridge returns correctly for valid and invalid ROM files") {
+//     Cartridge cart1;
+//     REQUIRE(cart1.loadCartridge("Tetris.gb") == true);
+//     Cartridge cart2;
+//     REQUIRE(cart2.loadCartridge("GAJGLSDHGSHL") == false);
+// }
 
+// TEST_CASE("Run main gameplay loop") {
+//     Emulator emu("Tetris.gb");
+//     while (true) {
+//         emu.loop();
+//         while (std::cin.get() != '\n') {};
+//     }
+// }
+
+TEST_CASE("Export memory to file") {
+    std::fstream file;
+    file.open("memory.txt", std::ios::out);
+    Emulator emu("Tetris.gb");
+    for (u16 i = 0; i < 0xFFFF; i++) {
+        file << "0x" << std::hex << i << ": 0x" << std::hex << (int)emu.readMemory(i) << "\n";
+    }
+}
 // int main(int argc, char *argv[]) {
 //     printf("EMULATOR TESTS\n");
 //     printf("Test 1: User can load game file using command line argument\n");

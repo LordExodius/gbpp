@@ -18,9 +18,71 @@ CPU::CPU(MMU *mmu)
     CPU::HL.setWord(0x014D);
     CPU::SP.setWord(0xFFFE);
     CPU::PC.setWord(0x0100); // PC start location is 0x0100 for practical purposes
+
+    mmu->writeByte(0xFF05, 0x00);
+    mmu->writeByte(0xFF06, 0x00);
+    mmu->writeByte(0xFF07, 0x00);
+    mmu->writeByte(0xFF10, 0x80);
+    mmu->writeByte(0xFF11, 0xBF);
+    mmu->writeByte(0xFF12, 0xF3);
+    mmu->writeByte(0xFF14, 0xBF);
+    mmu->writeByte(0xFF16, 0x3F);
+    mmu->writeByte(0xFF17, 0x00);
+    mmu->writeByte(0xFF19, 0xBF);
+    mmu->writeByte(0xFF1A, 0x7F);
+    mmu->writeByte(0xFF1B, 0xFF);
+    mmu->writeByte(0xFF1C, 0x9F);
+    mmu->writeByte(0xFF1E, 0xBF);
+    mmu->writeByte(0xFF20, 0xFF);
+    mmu->writeByte(0xFF21, 0x00);
+    mmu->writeByte(0xFF22, 0x00);
+    mmu->writeByte(0xFF23, 0xBF);
+    mmu->writeByte(0xFF24, 0x77);
+    mmu->writeByte(0xFF25, 0xF3);
+    mmu->writeByte(0xFF26, 0xF1);
+    mmu->writeByte(0xFF40, 0x91);
+    mmu->writeByte(0xFF42, 0x00);
+    mmu->writeByte(0xFF43, 0x00);
+    mmu->writeByte(0xFF45, 0x00);
+    mmu->writeByte(0xFF47, 0xFC);
+    mmu->writeByte(0xFF48, 0xFF);
+    mmu->writeByte(0xFF49, 0xFF);
+    mmu->writeByte(0xFF4A, 0x00);
+    mmu->writeByte(0xFF4B, 0x00);
+    mmu->writeByte(0xFFFF, 0x00);
 }
 
 CPU::~CPU() {}
+
+// REGISTERS
+u16 CPU::getSP()
+{
+    return CPU::SP.getWord();
+}
+void CPU::setSP(u16 value)
+{
+    CPU::SP.setWord(value);
+}
+u16 CPU::getPC()
+{
+    return CPU::PC.getWord();
+}
+void CPU::setPC(u16 value)
+{
+    CPU::PC.setWord(value);
+}
+
+void CPU::pushStackWord(u16 word) {
+    // Push word to stack and decrement the pointer
+    // Decrement push lower byte
+    SP.setWord(SP.getWord() - 1);
+    u8 lower = (u8) (word & 0x00FF);
+    mmu->writeByte(SP.getWord(), lower);
+    // Push higher byte
+    SP.setWord(SP.getWord() - 1);
+    u8 higher = (u8) ((word & 0xFF00) >> 8);
+    mmu->writeByte(SP.getWord(), higher);
+}
 
 // Flag Operations
 
@@ -818,7 +880,7 @@ int CPU::executeInstruction(u8 instruction)
     case 0x96:
     {
         CPU::sub_a(mmu->readByte(HL.getWord()));
-        return 1;
+        return 2;
     }
     // SUB A, A
     case 0x97:

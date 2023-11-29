@@ -32,6 +32,9 @@ public:
     ~Emulator();
 
     void loop();
+    void handleInterrupts();
+    u8 readMemory(u16 addr);
+
     void run();
 };
 

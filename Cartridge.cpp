@@ -4,8 +4,9 @@
 #include <filesystem>
 #include <cstring>
 
-Cartridge::Cartridge() {
-    gameData = nullptr;
+Cartridge::Cartridge(std::string gameFile) {
+    loadCartridge(gameFile);
+
 }
 
 bool Cartridge::loadCartridge(std::string gameFile) {
@@ -80,12 +81,18 @@ bool Cartridge::verifyChecksum() {
 }
 
 u8 Cartridge::getMemory(u16 address) {
-    if (address < fileSize) {
+    printf("Reading memory at address: 0x%04X\n", address);
+    printf("File size: %ld\n", fileSize);
+    if (address <= 0x9FFF) {
         return gameData[address];
     } else {
         printf("Error: invalid memory address\n");
         return 0;
     }
+}
+
+u8 *Cartridge::getGameData() {
+    return gameData;
 }
 
 Cartridge::~Cartridge() {

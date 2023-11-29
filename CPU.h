@@ -52,6 +52,18 @@ public:
      */
     ~CPU();
 
+    // REGISTERS
+    u16 getSP();
+    void setSP(u16 value);
+    u16 getPC();
+    void setPC(u16 value);
+
+    // Alt
+    void pushStackWord(u16 word);
+    void pushStackByte(u8 byte);
+    u16 popStackWord();
+    u8 popStackByte();
+
     // FLAGS
     bool getZeroFlag();
     void setZeroFlag(bool);
