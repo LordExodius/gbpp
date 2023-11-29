@@ -2,13 +2,14 @@
 #define MMU_H
 
 #include "global.h"
+#include "Cartridge.h"
 
 class MMU
 {
 private:
     u8 memory[0xFFFF]; ///< Gameboy Memory
 public:
-    MMU(/* args */);
+    MMU(Cartridge *cartridge, std::string gameFile);
     ~MMU();
 
     u8 readByte(u16 location);

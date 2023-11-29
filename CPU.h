@@ -5,8 +5,6 @@
 #include "Register.h"
 #include "MMU.h"
 
-#define CPU_CLOCK_SPEED 4194304
-
 #define ZERO_VALUE 0x80
 #define SUB_VALUE 0x40
 #define HALF_VALUE 0x20
@@ -54,6 +52,18 @@ public:
      */
     ~CPU();
 
+    // REGISTERS
+    u16 getSP();
+    void setSP(u16 value);
+    u16 getPC();
+    void setPC(u16 value);
+
+    // Alt
+    void pushStackWord(u16 word);
+    void pushStackByte(u8 byte);
+    u16 popStackWord();
+    u8 popStackByte();
+
     // FLAGS
     bool getZeroFlag();
     void setZeroFlag(bool);
@@ -67,8 +77,11 @@ public:
     // Helpers
     bool checkHCarry_8(u8 arg1, u8 arg2, u8 res);
     bool checkHCarry_16(u16 arg1, u16 arg2, u16 res);
+    bool checkCarry_8(u8 arg1, u8 arg2);
+    bool checkCarry_16(u16 arg1, u16 arg2);
 
     // Instructions
+    u8 getInstruction();
     /**
      * @brief Given an 8-bit CPU instruction, execute the associated Opcode and update flags as necessary.
      * 
@@ -76,6 +89,26 @@ public:
      * @return `int` The number of M-cycles taken to execute the opcode.
      */
     int executeInstruction(u8 instruction);
+
+    void add_8(u8 arg);
+    void add_16(u16 arg);
+    void sub_a(u8 arg);
+    void add_hl(u16 arg);
+    void add_sp(s8 arg);
+    void adc();
+    void inc_8(u8 *reg);
+    void inc_16(Register *reg);
+    void dec_8(u8 *reg);
+    void dec_16(Register *reg);    void or_a(u8 arg);
+    void and_a(u8 arg);
+    void xor_a(u8 arg);
+    void cp(u8 arg);
+    void pop(Register *reg);
+    void jp();
+    void jp_hl();
+    void ret();
+    void call();
+
 
     // Timer
     u8 getDivider();

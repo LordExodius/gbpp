@@ -6,13 +6,20 @@
 #include "MMU.h"
 #include "CPU.h"
 #include "Register.h"
+#include "Graphics.h"
 
-class Emulator {
+#define FRAMES_PER_SECOND 60
+#define CYCLES_PER_FRAME CPU_CLOCK_SPEED/FRAMES_PER_SECOND
+
+class Emulator
+{
 private:
     Cartridge cartridge; ///< Cartridge object
-    MMU mmu; ///< MMU object
-    CPU cpu; ///< CPU object
-    Register reg; ///< Register object
+    MMU mmu;             ///< MMU object
+    CPU cpu;             ///< CPU object
+    Register reg;        ///< Register object
+    Graphics *graphics;
+
 public:
     /**
      * @brief Constructor for Emulator object
@@ -23,6 +30,12 @@ public:
      * @brief Destroy the Emulator object
      */
     ~Emulator();
+
+    void loop();
+    void handleInterrupts();
+    u8 readMemory(u16 addr);
+
+    void run();
 };
 
 #endif
