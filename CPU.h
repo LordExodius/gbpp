@@ -201,13 +201,60 @@ public:
     void call();
 
     // Timer
+
+    /**
+     * @brief Get the Divider object
+     * 
+     * @return u8 
+     */
     u8 getDivider();
+
+    /**
+     * @brief Get the Timer object
+     * 
+     * @return u8 
+     */
     u8 getTimer();
+
+    /**
+     * @brief Get the Timer Modulo object
+     * 
+     * @return u8 
+     */
     u8 getTimerModulo();
+
+    /**
+     * @brief Resets the divider.
+     * 
+     */
     void resetDivider();
+
+    /**
+     * @brief Set the Divider object to the given value.
+     * 
+     * @param value 
+     */
     void setDivider(u8 value);
+
+    /**
+     * @brief Set the Timer object to the given value.
+     * 
+     * @param value 
+     */
     void setTimer(u8 value);
+
+    /**
+     * @brief Set the Timer Modulo object.
+     * 
+     * @param value 
+     */
     void setTimerModulo(u8 value);
+
+    /**
+     * @brief Update the timer to the given cycle.
+     * 
+     * @param cycles 
+     */
     void updateTimer(int cycles);
 
     // DEBUG
