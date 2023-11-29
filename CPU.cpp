@@ -347,8 +347,14 @@ int CPU::executeInstruction(u8 instruction)
     // INC (HL)
     case 0x34:
     {
-        CPU::inc_8(&mmu->readWord(HL.getWord()));
-        return 1;
+        u8 byte = mmu->readByte(HL.getWord());
+        u8 res = byte + 1;
+        mmu->writeByte(HL.getWord(), res);
+        CPU::setZeroFlag(!res);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(CPU::checkHCarry_16(HL.getWord(), 1, res));
+        CPU::setCarryFlag(CPU::checkCarry_16(HL.getWord(), 1));
+        return 2;
     }
     // LD B, H
     case 0x44:
@@ -387,7 +393,13 @@ int CPU::executeInstruction(u8 instruction)
     // DEC (HL)
     case 0x35:
     {
-        CPU::dec_8(&mmu->readWord(HL.getWord()));
+        u8 byte = mmu->readByte(HL.getWord());
+        u8 res = byte - 1;
+        mmu->writeWord(HL.getWord(), res);
+        CPU::setZeroFlag(!res);
+        CPU::setSubFlag(1);
+        CPU::setHCarryFlag(CPU::checkHCarry_8(byte, -1, res));
+        CPU::setCarryFlag(CPU::checkCarry_8(byte, -1));
         return 1;
     }
     // LD B, L
@@ -911,7 +923,8 @@ int CPU::executeInstruction(u8 instruction)
         return 1;
     // XOR A, E
     case 0xAB:
-        CPU::xor_a(DE.lower);;
+        CPU::xor_a(DE.lower);
+        ;
         return 1;
     // XOR A, H
     case 0xAC:
@@ -1015,7 +1028,8 @@ int CPU::executeInstruction(u8 instruction)
     // RET NZ
     case 0xC0:
     {
-        if (!CPU::getZeroFlag()){
+        if (!CPU::getZeroFlag())
+        {
             CPU::ret();
             return 5;
         }
@@ -1025,22 +1039,23 @@ int CPU::executeInstruction(u8 instruction)
     // POP BC
     case 0xC1:
         CPU::pop(&BC);
-        return 3; 
+        return 3;
     // JP NZ, u16 -- REVIEW
     case 0xC2:
     {
-        if (!CPU::getZeroFlag()) 
+        if (!CPU::getZeroFlag())
         {
             CPU::jp();
             return 4;
-        } 
-        else return 3;
+        }
+        else
+            return 3;
     }
     // JP u16:
     case 0xC3:
     {
         CPU::jp();
-        return 4; 
+        return 4;
     }
     // CALL NZ, u16
     case 0xC4:
@@ -1092,7 +1107,8 @@ int CPU::executeInstruction(u8 instruction)
     // CALL Z, a16
     case 0xCC:
     {
-        if (CPU::getZeroFlag()){
+        if (CPU::getZeroFlag())
+        {
             return 6;
         }
         else
@@ -1206,14 +1222,17 @@ int CPU::executeInstruction(u8 instruction)
     // JP C, a16
     case 0xDA:
     {
-        if (CPU::getCarryFlag()){
+        if (CPU::getCarryFlag())
+        {
             CPU::jp();
             return 4;
-        } else {
+        }
+        else
+        {
             return 3;
         }
     }
-}
+    }
 }
 
 void CPU::add_8(u8 arg)
@@ -1291,26 +1310,30 @@ void CPU::pop(Register *reg)
     SP.setWord(SP.getWord() + 1);
 }
 
-void CPU::jp() {
+void CPU::jp()
+{
     u8 lower = CPU::getInstruction();
     u8 higher = CPU::getInstruction();
     PC.lower = lower;
     PC.higher = higher;
 }
 
-void CPU::jp_hl() {
+void CPU::jp_hl()
+{
     PC.lower = HL.lower;
     PC.higher = HL.higher;
 }
 
-void CPU::ret() {
+void CPU::ret()
+{
     PC.lower = mmu->readByte(SP.getWord());
     SP.setWord(SP.getWord() + 1);
     PC.higher = mmu->readByte(SP.getWord());
     SP.setWord(SP.getWord() + 1);
 }
 
-void CPU::call() {
+void CPU::call()
+{
     u8 lower = CPU::getInstruction();
     u8 higher = CPU::getInstruction();
     SP.setWord(SP.getWord() - 1);
@@ -1319,18 +1342,6 @@ void CPU::call() {
     mmu->writeByte(SP.getWord(), PC.lower);
     PC.lower = lower;
     PC.higher = higher;
-}
-
-// DEBUG
-
-void CPU::dumpRegisters()
-{
-    std::cout << "AF: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::AF.getWord() << " (" << std::bitset<16>(CPU::AF.getWord()) << ")\n";
-    std::cout << "BC: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::BC.getWord() << " (" << std::bitset<16>(CPU::BC.getWord()) << ")\n";
-    std::cout << "DE: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::DE.getWord() << " (" << std::bitset<16>(CPU::DE.getWord()) << ")\n";
-    std::cout << "HL: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::HL.getWord() << " (" << std::bitset<16>(CPU::HL.getWord()) << ")\n";
-    std::cout << "SP: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::SP.getWord() << " (" << std::bitset<16>(CPU::SP.getWord()) << ")\n";
-    std::cout << "PC: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::PC.getWord() << " (" << std::bitset<16>(CPU::PC.getWord()) << ")\n\n";
 }
 
 void CPU::inc_8(u8 *reg)
@@ -1375,4 +1386,16 @@ void CPU::dec_16(Register *reg)
     CPU::setSubFlag(1);
     CPU::setHCarryFlag(CPU::checkHCarry_16(word, -1, res));
     CPU::setCarryFlag(CPU::checkCarry_16(word, -1));
+}
+
+// DEBUG
+
+void CPU::dumpRegisters()
+{
+    std::cout << "AF: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::AF.getWord() << " (" << std::bitset<16>(CPU::AF.getWord()) << ")\n";
+    std::cout << "BC: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::BC.getWord() << " (" << std::bitset<16>(CPU::BC.getWord()) << ")\n";
+    std::cout << "DE: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::DE.getWord() << " (" << std::bitset<16>(CPU::DE.getWord()) << ")\n";
+    std::cout << "HL: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::HL.getWord() << " (" << std::bitset<16>(CPU::HL.getWord()) << ")\n";
+    std::cout << "SP: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::SP.getWord() << " (" << std::bitset<16>(CPU::SP.getWord()) << ")\n";
+    std::cout << "PC: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::PC.getWord() << " (" << std::bitset<16>(CPU::PC.getWord()) << ")\n\n";
 }
