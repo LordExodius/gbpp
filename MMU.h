@@ -25,7 +25,7 @@ public:
      * @brief Constructor for MMU object
      * @param void
      */
-    MMU(/* args */);
+    MMU(Cartridge *cartridge, std::string gameFile);
     /**
      * @brief Destroyer for MMU object
      * @param void

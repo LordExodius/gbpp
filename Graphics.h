@@ -12,7 +12,7 @@ class Graphics {
          * 
          * @param mmu 
          */
-        Graphics(MMU* mmu); 
+        Graphics(MMU* mmu, CPU* cpu); 
 
         /**
          * @brief Destroy the Graphics object
@@ -42,7 +42,8 @@ class Graphics {
          * @param cycles The number of cycles that passed since the last update
          * @return std::vector<sf::Uint8> An array of pixels representing the scanline
          */
-        std::vector<sf::Uint8> updateArray(int cycles);
+        void updateArray(int cycles);
+        sf::RenderWindow window; ///< The window of the emulator
 
     private:
         int spriteSize; ///< The size of the sprites, either 8x8 or 8x16
@@ -58,10 +59,9 @@ class Graphics {
         u16 backgroundMemory; ///< The start address of the background memory
         const int SCREEN_WIDTH = 160; ///< The width of the screen
         const int SCREEN_HEIGHT = 144; ///< The height of the screen
-        sf::RenderWindow window; ///< The window of the emulator
         sf::Texture texture; ///< The texture of the emulator
         sf::Sprite sprite; ///< The sprite of the emulator
-        // CPU* cpu; ///< A pointer to the CPU object
+        CPU* cpu; ///< A pointer to the CPU object
         MMU* mmu; ///< A pointer to the MMU object
 
         /**
