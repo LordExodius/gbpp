@@ -4,8 +4,9 @@
 #include <filesystem>
 #include <cstring>
 
-Cartridge::Cartridge() {
-    gameData = nullptr;
+Cartridge::Cartridge(std::string gameFile) {
+    loadCartridge(gameFile);
+
 }
 
 bool Cartridge::loadCartridge(std::string gameFile) {
@@ -88,6 +89,10 @@ u8 Cartridge::getMemory(u16 address) {
         printf("Error: invalid memory address\n");
         return 0;
     }
+}
+
+u8 *Cartridge::getGameData() {
+    return gameData;
 }
 
 Cartridge::~Cartridge() {
