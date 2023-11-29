@@ -1281,7 +1281,6 @@ int CPU::executeInstruction(u8 instruction)
         SP.setWord(SP.getWord() - 2);
         DE.lower = mmu->readByte(SP.getWord());
         SP.setWord(SP.getWord() - 2);
-        ;
         return 4;
     }
     // SUB d8
@@ -1324,6 +1323,180 @@ int CPU::executeInstruction(u8 instruction)
         {
             return 3;
         }
+    }
+    // CALL C, u16
+    case 0xDC:
+    {
+        if (CPU::getCarryFlag() == 1){
+            CPU::call();
+            return 6;
+        } else {
+            return 3;
+        }
+    }
+    // SBC A, d8 -- REVIEW
+    case 0xDE:
+    {
+        // AF.lower -= (d8 + CPU::getCarryFlag(AF.lower));
+        CPU::sub_a(AF.lower - CPU::getCarryFlag());
+        return 2;
+    }
+    // RST 3
+    case 0xDF:
+    {
+        return 4;
+    }
+    // LD (a8), A -- REVIEW
+    case 0xE0:
+    {
+        // confused
+        return 3;  
+    }
+    // POP HL
+    case 0xE1:
+    {
+        CPU::pop(&HL);
+        return 3;
+    }
+    // LD (C), A
+    case 0xE2:
+    {
+        // confused
+        return 2;
+    }
+    // PUSH HL
+    case 0xE5:
+    {
+        HL.setWord(HL.getWord() - 1);
+        DE.higher = mmu->readByte(HL.getWord() - 1);
+        HL.setWord(HL.getWord() - 2);
+        DE.lower = mmu->readByte(HL.getWord());
+        HL.setWord(HL.getWord() - 2);
+        return 4;
+    }
+    // AND d8
+    case 0xE6:
+    {
+        CPU::and_a(dummy_val);// what to repalce for u8?
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(1);
+        CPU::setCarryFlag(0);
+        return 2;
+    }
+    // RST 4
+    case 0xE7:
+    {
+        return 4;
+    }
+    // ADD SP, s8
+    case 0xE8:
+    {
+        CPU::add_sp(dummy_s8); // what to replace for s8?
+        return 4;
+    }
+    // JP HL
+    case 0xE9:
+    {
+        CPU::jp_hl();
+        return 1;
+    }
+    // LD (a16), A
+    case 0xEA:
+    {
+        // don't know how to:
+        // Store the contents of register A in the internal RAM or register specified by the 16-bit immediate operand a16.
+        return 4;
+    }
+    // XOR d8
+    case 0xEE:
+    {
+        CPU::xor_a(dummy_d8); // what to replace for d8?
+        return 2;
+    }
+    // RST 5
+    case 0xEF:
+    {
+        return 4;
+    }
+    // LD A, (a8)
+    case 0xF0:
+    {
+        // confused
+        return 3;
+    }
+    // POP AF
+    case 0xF1:
+    {
+        CPU::pop(&AF);
+        return 3;
+    }
+    // LD A, (C)
+    case 0xF2:
+    {
+        // confused
+        return 1;
+    }
+    // PUSH AF
+    case 0xF5:
+    {
+        SP.setWord(SP.getWord() - 1);
+        AF.higher = mmu->readByte(SP.getWord() - 1);
+        SP.setWord(SP.getWord() - 2);
+        AF.lower = mmu->readByte(SP.getWord());
+        SP.setWord(SP.getWord() - 2);
+        return 4;
+    }
+    // OR d8
+    case 0xF6:
+    {
+        CPU::or_a(dummy_d8); // what to replace for d8?
+        return 2;
+    }
+    // RST 6
+    case 0xF7:
+    {
+        return 4;
+    }
+    // LD HL, SP+s8
+    case 0xF8:
+    {
+        // Add the 8-bit signed operand s8 (values -128 to +127) to the stack pointer SP, 
+        // and store the result in register pair HL.
+        HL = dummy_s8 + SP.getWord(); // what to replace for s8?
+        return 3;
+    }
+    // LD SP, HL
+    case 0xF9:
+    {
+        SP.lower = mmu->readByte(HL.getWord() + 1);
+        SP.higher = mmu->readByte(HL.getWord() + 2);
+        // SP.setWord(HL.getWord()); // Is this the better way?
+        return 2;
+    }
+    // LD A, (a16) -- REVIEW
+    case 0xFA:
+    {
+        // Load into register A the contents of the internal RAM or 
+        // register specified by the 16-bit immediate operand a16.
+        return 4;
+    }
+    // EI -- REVIEW
+    case 0xFB:
+    {
+        // confused
+        return 1;
+    }
+    // CP d8
+    case 0xFE:
+    {
+        CPU::cp(dummy_d8); // what to replace with d8?
+        return 2;
+    }
+    // RST 7
+    case 0xFF:
+    {
+        // confused
+        return 4;
     }
     default:
         printf("unkown opcode %02X\n", instruction);
