@@ -6,69 +6,98 @@
 #include "Emulator.h"
 #include "Graphics.h"
 
-void checkFlags(CPU cpu)
-{
-    std::cout << "z: " << cpu.getZeroFlag() << "\n";
-    std::cout << "n: " << cpu.getSubFlag() << "\n";
-    std::cout << "h: " << cpu.getHCarryFlag() << "\n";
-    std::cout << "c: " << cpu.getCarryFlag() << "\n\n";
+#include <fstream>
+
+// Unit Testing
+#define CONFIG_CATCH_MAIN
+#include "catch_amalgamated.hpp"
+
+// TEST_CASE("F register flags are accessible and initialized correctly") {
+//     MMU mmu;
+//     CPU cpu(&mmu);
+//     // Register F init to 0xB0 (0b10110000)
+//     REQUIRE(cpu.getZeroFlag() == true);
+//     REQUIRE(cpu.getSubFlag() == false);
+//     REQUIRE(cpu.getHCarryFlag() == true);
+//     REQUIRE(cpu.getCarryFlag() == true);
+// }
+
+// TEST_CASE("Cartridge returns correctly for valid and invalid ROM files") {
+//     Cartridge cart1;
+//     REQUIRE(cart1.loadCartridge("Tetris.gb") == true);
+//     Cartridge cart2;
+//     REQUIRE(cart2.loadCartridge("GAJGLSDHGSHL") == false);
+// }
+
+TEST_CASE("Run main gameplay loop") {
+    Emulator emu("Tetris.gb");
+    while (true) {
+        emu.loop();
+        while (std::cin.get() != '\n') {};
+    }
 }
 
-int main(int argc, char *argv[])
-{
-    printf("EMULATOR TESTS\n");
-    // printf("Test 1: User can load game file using command line argument\n");
-    const char *fileName = argv[1];
-    Emulator emulator(fileName);
+// TEST_CASE("Export memory to file") {
+//     std::fstream file;
+//     file.open("memory.txt", std::ios::out);
+//     Emulator emu("Tetris.gb");
+//     for (u16 i = 0; i < 0xFFFF; i++) {
+//         file << "0x" << std::hex << i << ": 0x" << std::hex << (int)emu.readMemory(i) << "\n";
+//     }
+//     while (std::cin.get() != '\n') {};
+// }
+// int main(int argc, char *argv[]) {
+//     printf("EMULATOR TESTS\n");
+//     printf("Test 1: User can load game file using command line argument\n");
+//     const char *fileName = argv[1];
+//     Emulator emulator(fileName);
 
-    printf("\nCARTRIDGE TESTS\n");
-    printf("Test 1: User can load ROM file and read header\n");
-    Cartridge cartridge;
-    cartridge.loadCartridge("Tetris.gb");
+//     printf("\nCARTRIDGE TESTS\n");
+//     printf("Test 1: User can load ROM file and read header\n");
+//     Cartridge cartridge;
+//     cartridge.loadCartridge("Tetris.gb");
 
-    printf("\nTest 2: Can access cartridge memory given a 16-bit address\n");
-    std::cout << "Cartridge memory at 0x008: " << std::hex << (int)cartridge.getMemory(0x008) << "\n";
+//     printf("\nTest 2: Can access cartridge memory given a 16-bit address\n");
+//     std::cout << "Cartridge memory at 0x008: " << std::hex << (int)cartridge.getMemory(0x008) << "\n";
 
-    printf("\nCPU TESTS\n");
-    MMU mmu;
-    CPU cpu(&mmu);
+//     printf("\nCPU TESTS\n");
+//     MMU mmu;
+//     CPU cpu(&mmu);
 
-    // REGISTERS
-    printf("\nREGISTER TESTS\n");
-    printf("\nTest 3: CPU successfully initializes register values\n");
-    cpu.dumpRegisters();
+//     // REGISTERS
+//     printf("\nREGISTER TESTS\n");
+//     printf("\nTest 3: CPU successfully initializes register values\n");
+//     cpu.dumpRegisters();
 
-    printf("\nTest 4: Register F is correctly partitioned into flags\n");
-    checkFlags(cpu);
+//     printf("\nTest 4: Register F is correctly partitioned into flags\n");
+//     checkFlags(cpu);
 
-    printf("\nTest 5.1: Zero flag can be fetched and set");
-    printf("\nZero: %d\n", cpu.getZeroFlag());
-    cpu.setZeroFlag(false);
-    checkFlags(cpu);
+//     printf("\nTest 5.1: Zero flag can be fetched and set");
+//     printf("\nZero: %d\n", cpu.getZeroFlag());
+//     cpu.setZeroFlag(false);
+//     checkFlags(cpu);
 
-    printf("\nTest 5.2: Subtraction flag can be fetched and set");
-    printf("\nSub: %d\n", cpu.getSubFlag());
-    cpu.setSubFlag(true);
-    checkFlags(cpu);
+//     printf("\nTest 5.2: Subtraction flag can be fetched and set");
+//     printf("\nSub: %d\n", cpu.getSubFlag());
+//     cpu.setSubFlag(true);
+//     checkFlags(cpu);
 
-    printf("\nTest 5.3: Half carry flag can be fetched and set");
-    printf("\nHCarry: %d\n", cpu.getHCarryFlag());
-    cpu.setHCarryFlag(false);
-    checkFlags(cpu);
+//     printf("\nTest 5.3: Half carry flag can be fetched and set");
+//     printf("\nHCarry: %d\n", cpu.getHCarryFlag());
+//     cpu.setHCarryFlag(false);
+//     checkFlags(cpu);
 
-    printf("\nTest 5.4: Zero flag can be fetched and set");
-    printf("\nCarry: %d\n", cpu.getCarryFlag());
-    cpu.setCarryFlag(false);
-    checkFlags(cpu);
+//     printf("\nTest 5.4: Zero flag can be fetched and set");
+//     printf("\nCarry: %d\n", cpu.getCarryFlag());
+//     cpu.setCarryFlag(false);
+//     checkFlags(cpu);
 
-    printf("\nMEMORY TESTS");
-    printf("\nCan write a byte to memory:\n");
-    mmu.writeByte(0, 2);
-    printf("MMU Memory at 0x00: %d", mmu.readByte(0));
+//     printf("\nMEMORY TESTS");
+//     printf("\nCan write a byte to memory:\n");
+//     mmu.writeByte(0, 2);
+//     printf("MMU Memory at 0x00: %d", mmu.readByte(0));
 
-    printf("\nCan write a word to memory:\n");
-    mmu.writeByte(0, 0xF);
-    printf("MMU Memory at 0x00: %d\n\n", mmu.readWord(0));
-    // Graphics graphics;
-    // graphics.run();
-}
+//     printf("\nCan write a word to memory:\n");
+//     mmu.writeByte(0, 0xF);
+//     printf("MMU Memory at 0x00: %d\n\n", mmu.readWord(0));
+// }

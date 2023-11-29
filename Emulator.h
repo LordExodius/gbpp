@@ -1,13 +1,3 @@
-/**
- * @class Emulator
- * @brief Gameboy Emulator
- * @author Oscar Yu
- *
- * This is the main emulator class that enables the Gameboy to be run correctly
- * It simulates the behavior of the target system and provides an interface for interacting
- * with various components such as the CPU, and Memory Management Unit (MMU).
- */
-
 #ifndef EMULATOR_H
 #define EMULATOR_H
 
@@ -51,6 +41,9 @@ public:
      * providing a visual representation of the current emulation state.
      */
     void loop();
+    void handleInterrupts();
+    u8 readMemory(u16 addr);
+
     /**
      * @brief Main execution for the emulator
      * This function is responsible for running the selected Cartridge and CPU file

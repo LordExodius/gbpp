@@ -52,6 +52,18 @@ public:
      */
     ~CPU();
 
+    // REGISTERS
+    u16 getSP();
+    void setSP(u16 value);
+    u16 getPC();
+    void setPC(u16 value);
+
+    // Alt
+    void pushStackWord(u16 word);
+    void pushStackByte(u8 byte);
+    u16 popStackWord();
+    u8 popStackByte();
+
     // FLAGS
     bool getZeroFlag();
     void setZeroFlag(bool);
@@ -78,10 +90,25 @@ public:
      */
     int executeInstruction(u8 instruction);
 
-    void add_a(u8 arg);
+    void add_8(u8 arg);
+    void add_16(u16 arg);
+    void sub_a(u8 arg);
     void add_hl(u16 arg);
     void add_sp(s8 arg);
     void adc();
+    void inc_8(u8 *reg);
+    void inc_16(Register *reg);
+    void dec_8(u8 *reg);
+    void dec_16(Register *reg);    
+    void or_a(u8 arg);
+    void and_a(u8 arg);
+    void xor_a(u8 arg);
+    void cp(u8 arg);
+    void pop(Register *reg);
+    void jp();
+    void jp_hl();
+    void ret();
+    void call();
 
 
     // Timer

@@ -10,6 +10,7 @@
 #define MMU_H
 
 #include "global.h"
+#include "Cartridge.h"
 
 class MMU
 {
