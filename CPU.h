@@ -83,6 +83,13 @@ public:
     void add_hl(u16 arg);
     void add_sp(s8 arg);
     void adc();
+    void xor_a(u8 arg);
+    void cp(u8 arg);
+    void pop(Register *reg);
+    void jp();
+    void jp_hl();
+    void ret();
+    void call();
 
 
     // Timer
