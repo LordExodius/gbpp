@@ -2,15 +2,14 @@
 #include <iostream>
 #include <bitset>
 
-Graphics::Graphics(MMU* mmu, CPU* cpu) : window(sf::VideoMode(160, 144), "Gameboy Emulator") {
+Graphics::Graphics(MMU* mmu, CPU* cpu, sf::RenderWindow* window) {
     this->cpu = cpu;
     this->mmu = mmu;
-    window.setFramerateLimit(60);
+    this->window = window; 
+    this->window->setFramerateLimit(60); 
     texture.create(SCREEN_WIDTH, SCREEN_HEIGHT);
     sprite.setTexture(texture);
-
     setInitialDisplay();
-    run();
 }
 
 void Graphics::setInitialDisplay() {
@@ -84,6 +83,7 @@ void Graphics::setInitialDisplay() {
 
 void Graphics::renderTiles() {
     std::vector<sf::Uint8> pixelBuffer(SCREEN_WIDTH * SCREEN_HEIGHT * 4, 255);
+
     for (int pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
         u8 xPosition = pixel + scrollX;
         if (windowEnabled) {
@@ -95,18 +95,21 @@ void Graphics::renderTiles() {
         // Get tile address
         u16 tileAddress = backgroundMemory + ((scanLineCounter / 8) * 32) + (xPosition / 8);
         u16 tileNumber = mmu->readByte(tileAddress);
-        u16 tileLocation = startAddress;
 
         if (isUnsignedByte) {
-            tileLocation += (tileNumber * 16);
+            startAddress += (pixel * 16);
         } else {
-            tileLocation += ((tileNumber + 128) * 16);
+            startAddress += ((pixel + 128) * 16);
         }
 
         // Note: each bit contains info for two adjacent pixels
         u8 line = (scanLineCounter % 8) * 2;
-        u8 pixel1 = mmu->readByte(tileLocation + line);
-        u8 pixel2 = mmu->readByte(tileLocation + line + 1);
+        u8 pixel1 = mmu->readByte(startAddress + line);
+        u8 pixel2 = mmu->readByte(startAddress + line + 1);
+
+        // Print the line
+        // printf("Line: %d\n", line);
+        // printf("Scanline Counter: %d\n", scanLineCounter);
 
         // Get pixel color
         int colorBit = (xPosition % 8) - 1;
@@ -150,21 +153,15 @@ void Graphics::renderTiles() {
     }
 
     // Update the texture with the entire pixelBuffer
-    texture.update(pixelBuffer.data());
-    // printf("Pixel buffer data: %d\n", pixelBuffer.data());
-}
+    sf::IntRect updateRect(0, scanLineCounter, SCREEN_WIDTH, 1);
+    texture.update(pixelBuffer.data(), SCREEN_WIDTH, 1, 0, scanLineCounter);
+    printf("Scanline counter: %d\n", scanLineCounter);
 
-void Graphics::run() {
-    while (window.isOpen()) {
-        sf::Event event;
-
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
-        }
-        updateDisplay();
+    printf("Pixel buffer data: ");
+    for (int i = 0; i < 10; ++i) {
+        printf("%u ", static_cast<unsigned int>(pixelBuffer[i]));
     }
+    printf("\n");
 }
 
 void Graphics::renderSprites() {
@@ -228,21 +225,9 @@ sf::Uint8 Graphics::getPixelColor(u8 pixelValue) {
     }
 }
 
-std::vector<sf::Uint8> Graphics::updateScanline() {
-    std::vector<sf::Uint8> scanline(SCREEN_WIDTH);
-
-    // for (int pixel = 0; pixel < SCREEN_WIDTH; pixel++) {
-    //     u16 offset = startAddress + pixel + (scanLineCounter - 1) * SCREEN_WIDTH;
-    //     scanline[pixel] = mmu->readByte(offset);
-    //     int color = getPixelColor(scanline[pixel]);
-    //     scanline[pixel] = (color << 16) | (color << 8) | color | (255 << 24); 
-    // }
-
-    // return scanline;
-}
-
 void Graphics::updateArray(int cycles) {
     cycleCounter += cycles;
+    printf("Cycles param: %d\n", cycles);
     printf("Cycle counter: %d\n", cycleCounter);
 
     // Reset cycle counter
@@ -261,24 +246,24 @@ void Graphics::updateArray(int cycles) {
         // Reset scanline counter
         } else if (scanLineCounter > 153) {
             scanLineCounter = 0;
-
+            window->clear();
         // Vdraw - update scanline array
         } else if (scanLineCounter < 144) {
             renderTiles();
+            updateDisplay();
         }
     }
     return;
 }
 
 void Graphics::updateDisplay() {
-    window.clear();
     renderTiles();
-    window.draw(sprite);
-    window.display();
+    window->draw(sprite);
+    window->display();
 }
 
 bool Graphics::isOpen() {
-    return window.isOpen();
+    return window->isOpen();
 }
 
 Graphics::~Graphics() {
