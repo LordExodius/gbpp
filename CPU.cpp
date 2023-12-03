@@ -10,6 +10,7 @@
 
 CPU::CPU(MMU *mmu)
 {
+    printf("Initializing CPU...\n");
     CPU::mmu = mmu;
     // Init values from Pandocs for DMG Gameboy
     CPU::AF.setWord(0x01B0);
@@ -72,6 +73,16 @@ void CPU::setPC(u16 value)
     CPU::PC.setWord(value);
 }
 
+bool CPU::getIME()
+{
+    return CPU::IME;
+}
+void CPU::setIME(bool value)
+{
+    CPU::IME = value;
+}
+
+
 void CPU::pushStackWord(u16 word) {
     // Push word to stack and decrement the pointer
     // Decrement push lower byte
@@ -117,6 +128,14 @@ bool CPU::getCarryFlag()
 void CPU::setCarryFlag(bool set)
 {
     CPU::AF.lower = set ? CPU::AF.lower | CARRY_VALUE : CPU::AF.lower & ~CARRY_VALUE;
+}
+
+// Interrupts
+void CPU::requestInterrupt(u8 interrupt)
+{
+    u8 IF = mmu->readByte(0xFF0F);
+    IF |= interrupt;
+    mmu->writeByte(0xFF0F, IF);
 }
 
 // Flag Helpers
@@ -243,10 +262,8 @@ int CPU::executeInstruction(u8 instruction)
     // NOOP
     case 0x00:
     {
-        PC.setWord(PC.getWord() + 1);
         return 1;
     }
-
     // STPO ? WTF
     case 0x10:
     {
@@ -254,10 +271,22 @@ int CPU::executeInstruction(u8 instruction)
         return 1;
     // JR NZ i8?
     case 0x20:
-        return 1;
+        if(!getZeroFlag())
+        {
+            signed char step = CPU::getInstruction();
+            PC.setWord(PC.getWord() + step);
+            return 3;
+        } 
+        return 2;
     // JR NC i8?
     case 0x30:
-        return 1;
+        if(!getCarryFlag())
+        {
+            signed char step = CPU::getInstruction();
+            PC.setWord(PC.getWord() + step);
+            return 3;
+        } 
+        return 2;
     // LD B, B
     case 0x40:
         BC.lower = BC.lower;
@@ -276,27 +305,23 @@ int CPU::executeInstruction(u8 instruction)
         return 2;
     // LD BC,u16
     case 0x01:
-        BC.lower = mmu->readByte(PC.getWord() + 1);
-        BC.higher = mmu->readByte(PC.getWord() + 2);
-        PC.setWord(PC.getWord() + 3);
+        BC.lower = CPU::getInstruction();
+        BC.higher = CPU::getInstruction();
         return 3;
     // LD DE, u16
     case 0x11:
-        DE.lower = mmu->readByte(PC.getWord() + 1);
-        DE.higher = mmu->readByte(PC.getWord() + 2);
-        PC.setWord(PC.getWord() + 3);
+        DE.lower = CPU::getInstruction();
+        DE.higher = CPU::getInstruction();
         return 3;
     // LD HL, u16
     case 0x21:
-        HL.lower = mmu->readByte(PC.getWord() + 1);
-        HL.higher = mmu->readByte(PC.getWord() + 2);
-        PC.setWord(PC.getWord() + 3);
+        HL.lower = CPU::getInstruction();
+        HL.higher = CPU::getInstruction();
         return 3;
     // LD SP, u16
     case 0x31:
-        SP.lower = mmu->readByte(PC.getWord() + 1);
-        SP.higher = mmu->readByte(PC.getWord() + 2);
-        PC.setWord(PC.getWord() + 3);
+        SP.lower = CPU::getInstruction();
+        SP.higher = CPU::getInstruction();
         return 3;
     // LD B, C
     case 0x41:
@@ -482,7 +507,7 @@ int CPU::executeInstruction(u8 instruction)
         return 2;
     // LD B,u8
     case 0x06:
-        BC.lower = mmu->readByte(PC.getWord() + 1);
+        BC.lower = CPU::getInstruction();
         return 2;
     // RLCA
     case 0x07:
@@ -702,6 +727,22 @@ int CPU::executeInstruction(u8 instruction)
     case 0x7D:
         AF.lower = HL.higher;
         return 1;
+    // LD C, u8
+    case 0x0E:
+        BC.higher = CPU::getInstruction();
+        return 2;
+    // LD E, u8
+    case 0x1E:
+        DE.higher = CPU::getInstruction();
+        return 2;
+    // LD L, u8
+    case 0x2E:
+        HL.higher = CPU::getInstruction();
+        return 2;
+    // LD A, u8
+    case 0x3E:
+        AF.lower = CPU::getInstruction();
+        return 2;
     // LD C, (HL)
     case 0x4E:
         BC.higher = mmu->readByte(HL.getWord());
@@ -1346,7 +1387,8 @@ int CPU::executeInstruction(u8 instruction)
     // AND d8
     case 0xE6:
     {
-        CPU::and_a(dummy_val);// what to repalce for u8?
+        u8 byte = CPU::getInstruction();
+        CPU::and_a(byte);
         CPU::setSubFlag(0);
         CPU::setHCarryFlag(1);
         CPU::setCarryFlag(0);
@@ -1360,7 +1402,8 @@ int CPU::executeInstruction(u8 instruction)
     // ADD SP, s8
     case 0xE8:
     {
-        CPU::add_sp(dummy_s8); // what to replace for s8?
+        signed char byte = CPU::getInstruction();
+        CPU::add_8(byte);
         return 4;
     }
     // JP HL
@@ -1372,14 +1415,18 @@ int CPU::executeInstruction(u8 instruction)
     // LD (a16), A
     case 0xEA:
     {
-        // don't know how to:
+        u8 lower = CPU::getInstruction();
+        u8 higher = CPU::getInstruction();
+        u16 addr = (higher << 8) | lower;
+        mmu->writeByte(addr, AF.lower);
         // Store the contents of register A in the internal RAM or register specified by the 16-bit immediate operand a16.
         return 4;
     }
     // XOR d8
     case 0xEE:
     {
-        CPU::xor_a(dummy_d8); // what to replace for d8?
+        u8 byte = CPU::getInstruction();
+        CPU::xor_a(byte);
         return 2;
     }
     // RST 5
@@ -1418,7 +1465,8 @@ int CPU::executeInstruction(u8 instruction)
     // OR d8
     case 0xF6:
     {
-        CPU::or_a(dummy_d8); // what to replace for d8?
+        u8 byte = CPU::getInstruction();
+        CPU::or_a(byte); // what to replace for d8?
         return 2;
     }
     // RST 6
@@ -1431,15 +1479,19 @@ int CPU::executeInstruction(u8 instruction)
     {
         // Add the 8-bit signed operand s8 (values -128 to +127) to the stack pointer SP, 
         // and store the result in register pair HL.
-        HL = dummy_s8 + SP.getWord(); // what to replace for s8?
+        signed char byte = CPU::getInstruction();
+        u16 res = SP.getWord() + byte;
+        HL.setWord(res); // what to replace for s8?
+        CPU::setZeroFlag(!res);
+        CPU::setSubFlag(0);
+        CPU::setHCarryFlag(CPU::checkHCarry_16(SP.getWord(), byte, res));
+        CPU::setCarryFlag(CPU::checkCarry_16(SP.getWord(), byte));
         return 3;
     }
     // LD SP, HL
     case 0xF9:
     {
-        SP.lower = mmu->readByte(HL.getWord() + 1);
-        SP.higher = mmu->readByte(HL.getWord() + 2);
-        // SP.setWord(HL.getWord()); // Is this the better way?
+        SP.setWord(HL.getWord());
         return 2;
     }
     // LD A, (a16) -- REVIEW
@@ -1447,18 +1499,23 @@ int CPU::executeInstruction(u8 instruction)
     {
         // Load into register A the contents of the internal RAM or 
         // register specified by the 16-bit immediate operand a16.
+        u8 lower = CPU::getInstruction();
+        u8 higher = CPU::getInstruction();
+        u16 addr = (higher << 8) | lower;
+        AF.lower = mmu->readByte(addr);
         return 4;
     }
     // EI -- REVIEW
     case 0xFB:
     {
-        // confused
+        CPU::IME = true;
         return 1;
     }
     // CP d8
     case 0xFE:
     {
-        CPU::cp(dummy_d8); // what to replace with d8?
+        u8 byte = CPU::getInstruction();
+        CPU::cp(byte);
         return 2;
     }
     // RST 7
@@ -1467,6 +1524,9 @@ int CPU::executeInstruction(u8 instruction)
         // confused
         return 4;
     }
+    default:
+        printf("unkown opcode %02X\n", instruction);
+        return 1;
     }
 }
 

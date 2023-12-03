@@ -32,6 +32,8 @@ private:
     Register PC;    ///< Program Counter.
     Register SP;    ///< Stack Pointer.
 
+    bool IME = false;   ///< Interrupt Master Enable flag.
+
     // Memory
     MMU *mmu;       ///< Pointer to MMU object associated with the emulator.
 
@@ -58,6 +60,9 @@ public:
     u16 getPC();
     void setPC(u16 value);
 
+    bool getIME();
+    void setIME(bool value);
+
     // Alt
     void pushStackWord(u16 word);
     void pushStackByte(u8 byte);
@@ -73,6 +78,9 @@ public:
     void setHCarryFlag(bool);
     bool getCarryFlag();
     void setCarryFlag(bool);
+
+    // Interrupts
+    void requestInterrupt(u8 interrupt);
 
     // Helpers
     bool checkHCarry_8(u8 arg1, u8 arg2, u8 res);
@@ -95,7 +103,9 @@ public:
      * 
      * @param arg The value to add to register A.
      */
-    void add_a(u8 arg);
+    void add_8(u8 arg);
+
+    void add_16(u16 arg);
 
     /**
      * @brief Subtracts arg to the register A, then stores the result in register A.

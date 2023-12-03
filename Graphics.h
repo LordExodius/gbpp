@@ -12,17 +12,13 @@ class Graphics {
          * 
          * @param mmu 
          */
-        Graphics(MMU* mmu); 
+        Graphics(MMU* mmu, CPU* cpu, sf::RenderWindow *window); 
 
         /**
          * @brief Destroy the Graphics object
          */
         ~Graphics();
 
-        /**
-         * @brief Runs the graphics of the emulator and calls function to update the display
-         */
-        void run();
         /**
          * @brief Updates the display of the emulator
          */
@@ -42,7 +38,7 @@ class Graphics {
          * @param cycles The number of cycles that passed since the last update
          * @return std::vector<sf::Uint8> An array of pixels representing the scanline
          */
-        std::vector<sf::Uint8> updateArray(int cycles);
+        void updateArray(int cycles);
 
     private:
         int spriteSize; ///< The size of the sprites, either 8x8 or 8x16
@@ -58,10 +54,11 @@ class Graphics {
         u16 backgroundMemory; ///< The start address of the background memory
         const int SCREEN_WIDTH = 160; ///< The width of the screen
         const int SCREEN_HEIGHT = 144; ///< The height of the screen
-        sf::RenderWindow window; ///< The window of the emulator
         sf::Texture texture; ///< The texture of the emulator
         sf::Sprite sprite; ///< The sprite of the emulator
-        // CPU* cpu; ///< A pointer to the CPU object
+        sf::RenderWindow* window; ///< A pointer to the window object
+
+        CPU* cpu; ///< A pointer to the CPU object
         MMU* mmu; ///< A pointer to the MMU object
 
         /**
@@ -71,13 +68,6 @@ class Graphics {
          * @return sf::Uint8 The pixel color (white, light grey, dark grey, black)
          */
         sf::Uint8 getPixelColor(u8 pixelValue);
-
-        /**
-         * @brief A function to update the scanline array
-         * 
-         * @return std::vector<sf::Uint8> The updated scanline array
-         */
-        std::vector<sf::Uint8> updateScanline();
 
         /**
          * @brief Set the Initial Display based on the settings specified in the LCD Control Register
