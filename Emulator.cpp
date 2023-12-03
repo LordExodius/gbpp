@@ -5,12 +5,20 @@
 Emulator::Emulator(const char *fileName): cartridge(fileName), mmu(&cartridge, fileName), cpu(&mmu) {
     printf("Loading %s\n", fileName);
     cpu.dumpRegisters();
+    window.create(sf::VideoMode(160, 144), "Gameboy Emulator");
     run();
 }
 
 void Emulator::run() {
-    graphics = new Graphics(&mmu, &cpu);
-    while (graphics->window.isOpen()) {
+    graphics = new Graphics(&mmu, &cpu, &window);
+    while (graphics->isOpen()) {
+        sf::Event event;
+
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+        }
         loop();
     }
 }

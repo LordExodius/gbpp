@@ -12,17 +12,13 @@ class Graphics {
          * 
          * @param mmu 
          */
-        Graphics(MMU* mmu, CPU* cpu); 
+        Graphics(MMU* mmu, CPU* cpu, sf::RenderWindow *window); 
 
         /**
          * @brief Destroy the Graphics object
          */
         ~Graphics();
 
-        /**
-         * @brief Runs the graphics of the emulator and calls function to update the display
-         */
-        void run();
         /**
          * @brief Updates the display of the emulator
          */
@@ -43,7 +39,6 @@ class Graphics {
          * @return std::vector<sf::Uint8> An array of pixels representing the scanline
          */
         void updateArray(int cycles);
-        sf::RenderWindow window; ///< The window of the emulator
 
     private:
         int spriteSize; ///< The size of the sprites, either 8x8 or 8x16
@@ -61,6 +56,8 @@ class Graphics {
         const int SCREEN_HEIGHT = 144; ///< The height of the screen
         sf::Texture texture; ///< The texture of the emulator
         sf::Sprite sprite; ///< The sprite of the emulator
+        sf::RenderWindow* window; ///< A pointer to the window object
+
         CPU* cpu; ///< A pointer to the CPU object
         MMU* mmu; ///< A pointer to the MMU object
 
@@ -71,13 +68,6 @@ class Graphics {
          * @return sf::Uint8 The pixel color (white, light grey, dark grey, black)
          */
         sf::Uint8 getPixelColor(u8 pixelValue);
-
-        /**
-         * @brief A function to update the scanline array
-         * 
-         * @return std::vector<sf::Uint8> The updated scanline array
-         */
-        std::vector<sf::Uint8> updateScanline();
 
         /**
          * @brief Set the Initial Display based on the settings specified in the LCD Control Register

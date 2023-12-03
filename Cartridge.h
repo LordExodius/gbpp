@@ -36,18 +36,7 @@ private:
     GBHeader getHeader(u8 *gameData);
 
     /**
-     * @brief Get the size of the ROM file in bytes.
-     *
-     * @param gameFile A string containing the name of the ROM file.
-     * @return A long value representing the size of the ROM file in bytes.
-     */
-    long getFileSize(std::string gameFile);
-
-    /**
      * @brief Verifies the checksum of the ROM file to ensure the game files
-=======
-     * @brief Verifies the checksum of the ROM file to ensure the game files
->>>>>>> 11b6004329bdab6e6d80e106cc5e21d32024e9a5
      * are not corrupted.
      *
      * @return true if the checksum is valid, false if the checksum is invalid

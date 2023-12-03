@@ -11,6 +11,7 @@
 #define EMULATOR_H
 
 #include <string>
+#include <SFML/Graphics.hpp>
 #include "Cartridge.h"
 #include "MMU.h"
 #include "CPU.h"
@@ -26,6 +27,7 @@ private:
     MMU mmu;             ///< MMU object
     CPU cpu;             ///< CPU object
     Graphics *graphics;  ///< Graphics object
+    sf::RenderWindow window; ///< The window of the emulator
 
 public:
     /**
