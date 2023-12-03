@@ -30,7 +30,7 @@
 // }
 
 TEST_CASE("Run main gameplay loop") {
-    Emulator emu("Tetris.gb");
+    Emulator emu("cpu_instrs.gb");
     // while (true) {
     //     emu.loop();
     //     while (std::cin.get() != '\n');

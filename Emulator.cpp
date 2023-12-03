@@ -53,36 +53,43 @@ void Emulator::loop() {
 
 void Emulator::handleInterrupts() {
     if (!cpu.getIME()) {
+        printf("IME is disabled\n");
         return;
     }
 
     cpu.setIME(false);
-    u8 IF = mmu.readByte(0xFF0F);
-    u8 IE = mmu.readByte(0xFFFF);
+    u8 IF = mmu.readByte(0xFF0F); // Interrupt Flag Register
+    u8 IE = mmu.readByte(0xFFFF); // Interrupt Enable Register
     cpu.pushStackWord(cpu.getPC());
     
     switch (IF & IE) {
         case 0x1: { // VBlank
+            printf("VBlank interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xFE);
             cpu.setPC(0x40);
+            printf("PC: 0x%04X\n", cpu.getPC());
             break;
         }
         case 0x2: { // LCD
+            printf("LCD interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xFD);
             cpu.setPC(0x48);
             break;
         }
         case 0x4: { // Timer
+            printf("Timer interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xFB);
             cpu.setPC(0x50);
             break;
         }
         case 0x8: { // Serial
+            printf("Serial interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xF7);
             cpu.setPC(0x40);
             break;
         }
         case 0xF: { // Joypad
+            printf("Joypad interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xEF);
             cpu.setPC(0x60);
             break;
