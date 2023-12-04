@@ -15,7 +15,7 @@ void MMU::writeByte(u16 location, u8 byte) {
         memory[location] = 0x00;
     }
     else if (location == 0xFF01) {
-        printf("SB: %c", byte);
+        printf("%c", byte);
     }
     else if ((location >= 0xE000) && (location < 0xFE00)) {
         writeByte(location - 0x2000, byte);

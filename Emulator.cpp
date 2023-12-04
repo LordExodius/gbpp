@@ -33,17 +33,18 @@ void Emulator::loop() {
     while (cyclesPassed < CYCLES_PER_FRAME) {
         u16 PC = cpu.getPC();
         logfile <<"PC 0x" << std::hex << PC;
-
+        if (PC == 0x0216)
+            while (std::cin.get() != '\n');
         u8 opCode = cpu.getInstruction();
         int cycles = cpu.executeInstruction(opCode);
 
         // print opcode and cycles
-        printf("PC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
+        // printf("\nPC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
         logfile << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
 
         cpu.updateTimer(cycles);
+        // cpu.dumpRegisters();
         cyclesPassed += cycles;
-        while (std::cin.get() != '\n');
         graphics->updateArray(cycles);
         handleInterrupts();
     }
@@ -53,7 +54,7 @@ void Emulator::loop() {
 
 void Emulator::handleInterrupts() {
     if (!cpu.getIME()) {
-        printf("IME is disabled\n");
+        // printf("IME is disabled\n");
         return;
     }
 

@@ -10,7 +10,7 @@
 
 CPU::CPU(MMU *mmu)
 {
-    printf("Initializing CPU...\n");
+    // printf("Initializing CPU...\n");
     CPU::mmu = mmu;
     // Init values from Pandocs for DMG Gameboy
     CPU::AF.setWord(0x01B0);
@@ -71,7 +71,7 @@ u16 CPU::getPC()
 void CPU::setPC(u16 value)
 {
     CPU::PC.setWord(value);
-    printf("New PC Value: 0x%04X\n", CPU::PC.getWord());
+    // printf("New PC Value: 0x%04X\n", CPU::PC.getWord());
 }
 
 bool CPU::getIME()
@@ -104,7 +104,10 @@ bool CPU::getZeroFlag()
 }
 void CPU::setZeroFlag(bool set)
 {
-    CPU::AF.lower = set ? CPU::AF.lower | ZERO_VALUE : CPU::AF.lower & ~ZERO_VALUE;
+    if (set)
+        CPU::AF.lower |= ZERO_VALUE;
+    else
+        CPU::AF.lower &= ~ZERO_VALUE;
 }
 bool CPU::getSubFlag()
 {
@@ -263,219 +266,219 @@ int CPU::executeInstruction(u8 instruction)
     // NOOP
     case 0x00:
     {
-        printf("NOP\n");
+        // printf("NOP\n");
         return 1;
     }
     // STOP ? WTF
     case 0x10:
     {
-        printf("STOP\n");
+        // printf("STOP\n");
         return 1;
     }
         return 1;
     // JR NZ i8?
     case 0x20:
-        printf("JR NZ ");
+        // printf("JR NZ ");
         if(!getZeroFlag())
         {
             signed char step = CPU::getInstruction();
-            printf("%d\n", step);
+            // printf("%d\n", step);
             PC.setWord(PC.getWord() + step);
             return 3;
         }
-        printf("\n");
+        // printf("\n");
         return 2;
     // JR NC i8?
     case 0x30:
-        printf("JR NC ");
+        // printf("JR NC ");
         if(!getCarryFlag())
         {
             signed char step = CPU::getInstruction();
-            printf("%d\n", step);
+            // printf("%d\n", step);
             PC.setWord(PC.getWord() + step);
             return 3;
         } 
         return 2;
     // LD B, B
     case 0x40:
-        printf("LD B, %u\n", BC.lower);
+        // printf("LD B, %u\n", BC.lower);
         BC.lower = BC.lower;
         return 1;
     // LD D, B
     case 0x50:
-        printf("LD D, %u\n",BC.lower);
+        // printf("LD D, %u\n",BC.lower);
         DE.lower = BC.lower;
         return 1;
     // LD H, B
     case 0x60:
-        printf("LD H, %u\n", BC.lower);
+        // printf("LD H, %u\n", BC.lower);
         HL.lower = BC.lower;
         return 1;
     // LD (HL), B
     case 0x70:
-        printf("LD (HL), %u\n", BC.lower);
+        // printf("LD (HL), %u\n", BC.lower);
         mmu->writeWord(HL.getWord(), BC.lower);
         return 2;
     // LD BC,u16
     case 0x01:
         BC.lower = CPU::getInstruction();
         BC.higher = CPU::getInstruction();
-        printf("LD BC, %u\n", BC.getWord());
+        // printf("LD BC, %u\n", BC.getWord());
         return 3;
     // LD DE, u16
     case 0x11:
         DE.lower = CPU::getInstruction();
         DE.higher = CPU::getInstruction();
-        printf("LD DE, %u\n", DE.getWord());
+        // printf("LD DE, %u\n", DE.getWord());
         return 3;
     // LD HL, u16
     case 0x21:
         HL.lower = CPU::getInstruction();
         HL.higher = CPU::getInstruction();
-        printf("LD HL, %u\n", HL.getWord());
+        // printf("LD HL, %u\n", HL.getWord());
         return 3;
     // LD SP, u16
     case 0x31:
         SP.lower = CPU::getInstruction();
         SP.higher = CPU::getInstruction();
-        printf("LD SP, %u\n", SP.getWord());
+        // printf("LD SP, %u\n", SP.getWord());
         return 3;
     // LD B, C
     case 0x41:
-        printf("LD B, %u\n", BC.higher);
+        // printf("LD B, %u\n", BC.higher);
         BC.lower = BC.higher;
         return 1;
     // LD D, C
     case 0x51:
-        printf("LD D, %u\n", BC.higher);
+        // printf("LD D, %u\n", BC.higher);
         DE.lower = BC.higher;
         return 1;
     // LD H, C
     case 0x61:
-        printf("LD H, %u\n", BC.higher);
+        // printf("LD H, %u\n", BC.higher);
         HL.lower = BC.higher;
         return 1;
     // LD (HL), C
     case 0x71:
-        printf("LD (HL), %u\n", BC.higher);
+        // printf("LD (HL), %u\n", BC.higher);
         mmu->writeWord(HL.getWord(), BC.higher);
         return 2;
     // LD (BC),A
     case 0x02:
-        printf("LD (BC), %u\n", AF.lower);
+        // printf("LD (BC), %u\n", AF.lower);
         mmu->writeWord(HL.getWord(), AF.lower);
         return 2;
     // LD (DE),A
     case 0x12:
-        printf("LD (DE), %u\n", AF.lower);
+        // printf("LD (DE), %u\n", AF.lower);
         mmu->writeWord(DE.getWord(), AF.lower);
         return 2;
     // LD (HL+),A
     case 0x22:
-        printf("LD (HL+), %u\n", AF.lower);
+        // printf("LD (HL+), %u\n", AF.lower);
         mmu->writeWord(HL.getWord(), AF.lower);
         HL.setWord(HL.getWord() + 1);
         return 2;
-    // LD (HL-),A
+    // LD (HL-), A
     case 0x32:
-        printf("LD (HL-), %u\n", AF.lower);
+        // printf("LD (HL-), %u\n", AF.lower);
         mmu->writeWord(HL.getWord(), AF.lower);
         HL.setWord(HL.getWord() - 1);
         return 2;
     // LD B, D
     case 0x42:
-        printf("LD B, %u\n", DE.lower);
+        // printf("LD B, %u\n", DE.lower);
         BC.lower = DE.lower;
         return 1;
     // LD D, D
     case 0x52:
-        printf("LD D, %u\n", DE.lower);
+        // printf("LD D, %u\n", DE.lower);
         DE.lower = DE.lower;
         return 1;
     // LD H, D
     case 0x62:
-        printf("LD H, %u\n", DE.lower);
+        // printf("LD H, %u\n", DE.lower);
         HL.lower = DE.lower;
         return 1;
     // LD (HL), D
     case 0x72:
-        printf("LD (HL), %u\n", DE.lower);
+        // printf("LD (HL), %u\n", DE.lower);
         mmu->writeWord(HL.getWord(), DE.lower);
         return 2;
     // INC BC ? should be 16 bit operation:
     case 0x03:
     {
-        printf("INC BC\n");
+        // printf("INC BC\n");
         CPU::inc_16(&BC);
         return 3;
     }
     // INC DE
     case 0x13:
     {
-        printf("INC DE\n");
+        // printf("INC DE\n");
         CPU::inc_16(&DE);
         return 3;
     }
     // INC HL
     case 0x23:
     {
-        printf("INC HL\n");
+        // printf("INC HL\n");
         CPU::inc_16(&HL);
         return 3;
     }
     // INC SP
     case 0x33:
     {
-        printf("INC SP\n");
+        // printf("INC SP\n");
         CPU::inc_16(&SP);
         return 3;
     }
     // LD B, E
     case 0x43:
-        printf("LD B, %u\n", DE.higher);
+        // printf("LD B, %u\n", DE.higher);
         BC.lower = DE.higher;
         return 1;
     // LD D, D
     case 0x53:
-        printf("LD D, %u\n", DE.higher);
+        // printf("LD D, %u\n", DE.higher);
         DE.lower = DE.higher;
         return 1;
     // LD H, D
     case 0x63:
-        printf("LD H, %u\n", DE.higher);
+        // printf("LD H, %u\n", DE.higher);
         HL.lower = DE.higher;
         return 1;
     // LD (HL), D
     case 0x73:
-        printf("LD (HL), %u\n", DE.higher);
+        // printf("LD (HL), %u\n", DE.higher);
         mmu->writeWord(HL.getWord(), DE.higher);
         return 2;
     
     // INC B
     case 0x04:
     {
-        printf("INC B\n");
+        // printf("INC B\n");
         CPU::inc_8(&BC.lower);
         return 1;
     }
     // INC D
     case 0x14:
     {
-        printf("INC D\n");
+        // printf("INC D\n");
         CPU::inc_8(&DE.lower);
         return 1;
     }
     // INC H
     case 0x24:
     {
-        printf("INC H\n");
+        // printf("INC H\n");
         CPU::inc_8(&HL.lower);
         return 1;
     }
     // INC (HL)
     case 0x34:
     {
-        printf("INC (HL)\n");
+        // printf("INC (HL)\n");
         u8 byte = mmu->readByte(HL.getWord());
         u8 res = byte + 1;
         mmu->writeByte(HL.getWord(), res);
@@ -487,42 +490,42 @@ int CPU::executeInstruction(u8 instruction)
     }
     // LD B, H
     case 0x44:
-        printf("LD B, %u\n", HL.lower);
+        // printf("LD B, %u\n", HL.lower);
         BC.lower = HL.lower;
         return 1;
     // LD D, H
     case 0x54:
-        printf("LD D, %u\n", HL.lower);
+        // printf("LD D, %u\n", HL.lower);
         DE.lower = HL.lower;
         return 1;
     // LD H, H
     case 0x64:
-        printf("LD H, %u\n", HL.lower);
+        // printf("LD H, %u\n", HL.lower);
         HL.lower = HL.lower;
         return 1;
     // LD (HL), H
     case 0x74:
-        printf("LD (HL), %u\n", HL.lower);
+        // printf("LD (HL), %u\n", HL.lower);
         mmu->writeWord(HL.getWord(), HL.lower);
         return 2;
     // DEC B
     case 0x05:
     {
-        printf("DEC B\n");
+        // printf("DEC B\n");
         CPU::dec_8(&BC.lower);
         return 1;
     }
     // DEC D
     case 0x15:
     {
-        printf("DEC D\n");
+        // printf("DEC D\n");
         CPU::dec_8(&DE.lower);
         return 1;
     }
     // DEC H
     case 0x25:
     {
-        printf("DEC H\n");
+        // printf("DEC H\n");
         CPU::dec_8(&HL.lower);
         return 1;
     }
@@ -584,23 +587,23 @@ int CPU::executeInstruction(u8 instruction)
         return 2;
     // HALT
     case 0x76:
-        printf("HALT (Incomplete)\n");
+        // printf("HALT (Incomplete)\n");
         return 1;
     // RLCA
     case 0x07:
-        printf("RLCA (Incomplete)\n");
+        // printf("RLCA (Incomplete)\n");
         return 0;
     // RLA
     case 0x17:
-        printf("RLA (Incomplete)\n");
+        // printf("RLA (Incomplete)\n");
         return 0;
     // DAA
     case 0x27:
-        printf("DAA (Incomplete)\n");
+        // printf("DAA (Incomplete)\n");
         return 0;
     // SCF
     case 0x37:
-        printf("SCF (Incomplete)\n");
+        // printf("SCF (Incomplete)\n");
         return 0;
     // LD B, A
     case 0x47:
@@ -621,7 +624,7 @@ int CPU::executeInstruction(u8 instruction)
     // LD (u16), SP
     case 0x08:
     {
-        printf("LD (u16), SP (Unsure)\n");
+        // printf("LD (u16), SP (Unsure)\n");
         u16 nn = mmu->readWord(PC.getWord() + 1);
         PC.setWord(PC.getWord() + 1);
         SP.setWord(nn);
@@ -631,36 +634,36 @@ int CPU::executeInstruction(u8 instruction)
     case 0x18:
     {
         signed char step = CPU::getInstruction();
-        printf("JR %d\n", step);
+        // printf("JR %d\n", step);
         PC.setWord(PC.getWord() + step);
         return 3;
     }
     // JR Z s8
     case 0x28:
     {
-        printf("JR Z ");
+        // printf("JR Z ");
         if(getZeroFlag())
         {
             signed char step = CPU::getInstruction();
-            printf("%d\n", step);
+            // printf("%d\n", step);
             PC.setWord(PC.getWord() + step);
             return 3;
         }
-        printf("\n");
+        // printf("\n");
         return 2;
     }
     // JR C s8
     case 0x38:
     {
-        printf("JR C ");
+        // printf("JR C ");
         if(getCarryFlag())
         {
             signed char step = CPU::getInstruction();
-            printf("%d\n", step);
+            // printf("%d\n", step);
             PC.setWord(PC.getWord() + step);
             return 3;
         }
-        printf("\n");
+        // printf("\n");
         return 2;
     }
     // LD C, B
@@ -1174,6 +1177,7 @@ int CPU::executeInstruction(u8 instruction)
         return 2;
     // XOR A,A
     case 0xAF:
+        // printf("XOR A, A\n");
         CPU::xor_a(AF.lower);
         return 1;
     // OR A, B
@@ -1340,6 +1344,7 @@ int CPU::executeInstruction(u8 instruction)
     {
         if (CPU::getZeroFlag())
         {
+            CPU::call();
             return 6;
         }
         else
@@ -1665,7 +1670,7 @@ int CPU::executeInstruction(u8 instruction)
         return 4;
     }
     default:
-        printf("unkown opcode %02X\n", instruction);
+        // printf("unkown opcode %02X\n", instruction);
         return 1;
     }
 }
@@ -1769,7 +1774,7 @@ void CPU::ret()
 
 void CPU::call()
 {
-    printf("CALL\n");
+    // printf("CALL\n");
     u8 lower = CPU::getInstruction();
     u8 higher = CPU::getInstruction();
     SP.setWord(SP.getWord() - 1);
@@ -1778,7 +1783,7 @@ void CPU::call()
     mmu->writeByte(SP.getWord(), PC.lower);
     PC.lower = lower;
     PC.higher = higher;
-    printf("PC: %02X\n", PC.getWord());
+    // printf("PC: %02X\n", PC.getWord());
 }
 
 void CPU::inc_8(u8 *reg)
@@ -1834,5 +1839,10 @@ void CPU::dumpRegisters()
     std::cout << "DE: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::DE.getWord() << " (" << std::bitset<16>(CPU::DE.getWord()) << ")\n";
     std::cout << "HL: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::HL.getWord() << " (" << std::bitset<16>(CPU::HL.getWord()) << ")\n";
     std::cout << "SP: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::SP.getWord() << " (" << std::bitset<16>(CPU::SP.getWord()) << ")\n";
-    std::cout << "PC: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::PC.getWord() << " (" << std::bitset<16>(CPU::PC.getWord()) << ")\n\n";
+    std::cout << "PC: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::PC.getWord() << " (" << std::bitset<16>(CPU::PC.getWord()) << ")\n";
+    // printf("zero: %s\n", CPU::getZeroFlag() ? "true" : "false");
+
+    // printf("IME: %s\n", CPU::getIME() ? "true" : "false");
+    // printf("IF: %04X\n", mmu->readByte(0xFF0F)); // Interrupt Flag Register
+    // printf("IE: %04X\n", mmu->readByte(0xFFFF));
 }
