@@ -63,9 +63,80 @@ TEST_CASE("CPU Instruction Tests") {
     Emulator emu("Tetris.gb");
     emu.getCPU()->resetRegisters();
     printf("Testing 8-bit arithmetic instructions\n");
+
+    // ADD A, n
+    printf("Testing ADD A, 0x10\n");
     emu.getCPU()->add_8(0x10);
-    printf("AF: 0x%04X\n", emu.getCPU()->getAF());
     REQUIRE(emu.getCPU()->getAF().higher == 0x10);
+    emu.getCPU()->dumpRegisters();
+
+    // Test carry flag
+    printf("Testing carry (Carry: true)\n");
+    emu.getCPU()->add_8(0xFF);
+    REQUIRE(emu.getCPU()->getAF().higher == 0x0F);
+    REQUIRE(emu.getCPU()->getCarryFlag() == true);
+    emu.getCPU()->dumpRegisters();
+
+    emu.getCPU()->resetRegisters();
+    // Test half carry flag
+    printf("Testing half carry (0x3E + 0x23) (HCarry: true)\n");
+    emu.getCPU()->add_8(62);
+    emu.getCPU()->add_8(35);
+    REQUIRE(emu.getCPU()->getAF().higher == 97);
+    REQUIRE(emu.getCPU()->getHCarryFlag() == true);
+    emu.getCPU()->dumpRegisters();
+
+    // test zero flag and subtraction flag
+    printf("Testing zero on subtraction (Zero: true, Sub: true)\n");
+    emu.getCPU()->sub_a(97);
+    REQUIRE(emu.getCPU()->getAF().higher == 0x00);
+    REQUIRE(emu.getCPU()->getZeroFlag() == true);
+    REQUIRE(emu.getCPU()->getSubFlag() == true);
+    emu.getCPU()->dumpRegisters();
+
+    // test or a
+    printf("Testing OR A\n");
+    emu.getCPU()->add_8(0x3C);
+    emu.getCPU()->or_a(0x1D);
+    REQUIRE(emu.getCPU()->getAF().higher == 0x3D);
+    emu.getCPU()->dumpRegisters();
+
+    // test xor a
+    printf("Testing XOR A\n");
+    emu.getCPU()->xor_a(0x34);
+    REQUIRE(emu.getCPU()->getAF().higher == 0x09);
+    emu.getCPU()->dumpRegisters();
+
+    // test and a
+    printf("Testing AND A (0x0F), (0x00)\n");
+    emu.getCPU()->and_a(0x0F);
+    REQUIRE(emu.getCPU()->getAF().higher == 0x09);
+    REQUIRE(emu.getCPU()->getZeroFlag() == false);
+    REQUIRE(emu.getCPU()->getHCarryFlag() == true);
+    emu.getCPU()->dumpRegisters();
+    emu.getCPU()->and_a(0x00);
+    REQUIRE(emu.getCPU()->getAF().higher == 0x00);
+    REQUIRE(emu.getCPU()->getZeroFlag() == true);
+    emu.getCPU()->dumpRegisters();
+
+    // test cp a
+    printf("Testing CP A\n");
+    emu.getCPU()->add_8(0x1B);
+    emu.getCPU()->cp(0x1B);
+    REQUIRE(emu.getCPU()->getZeroFlag() == true);
+    REQUIRE(emu.getCPU()->getSubFlag() == true);
+    emu.getCPU()->dumpRegisters();
+
+    // test jp nn
+    printf("Testing JP 0x01B0\n");
+    
+    emu.getCPU()->setPC(0x0100);
+    printf("PC Begin: 0x%04X\n", emu.getCPU()->getPC().getWord());
+
+    emu.getMMU()->writeWord(0x0100, 0x01B0);
+    emu.getCPU()->jp();
+    REQUIRE(emu.getCPU()->getPC().getWord() == 0x01B0);
+    emu.getCPU()->dumpRegisters();
 }
 
 // TEST_CASE("Export memory to file") {

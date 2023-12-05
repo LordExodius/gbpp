@@ -73,6 +73,7 @@ public:
     void run();
 
     CPU* getCPU();
+    MMU* getMMU();
 };
 
 #endif

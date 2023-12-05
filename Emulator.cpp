@@ -110,3 +110,7 @@ u8 Emulator::readMemory(u16 addr) {
 CPU* Emulator::getCPU() {
     return &cpu;
 }
+
+MMU* Emulator::getMMU() {
+    return &mmu;
+}

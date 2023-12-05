@@ -1909,6 +1909,7 @@ void CPU::dumpRegisters()
     printf("HL: 0x%04hX\n", HL.getWord());
     printf("SP: 0x%04hX\n", SP.getWord());
     printf("PC: 0x%04hX\n", PC.getWord());
+    printf("\n");
     // std::cout << "AF: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::AF.getWord() << " (" << std::bitset<16>(CPU::AF.getWord()) << ")\n";
     // std::cout << "BC: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::BC.getWord() << " (" << std::bitset<16>(CPU::BC.getWord()) << ")\n";
     // std::cout << "DE: 0x" << std::hex << std::setw(4) << std::setfill('0') << +CPU::DE.getWord() << " (" << std::bitset<16>(CPU::DE.getWord()) << ")\n";
