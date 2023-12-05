@@ -12,15 +12,14 @@
 #define CONFIG_CATCH_MAIN
 #include "catch_amalgamated.hpp"
 
-// TEST_CASE("F register flags are accessible and initialized correctly") {
-//     MMU mmu;
-//     CPU cpu(&mmu);
-//     // Register F init to 0xB0 (0b10110000)
-//     REQUIRE(cpu.getZeroFlag() == true);
-//     REQUIRE(cpu.getSubFlag() == false);
-//     REQUIRE(cpu.getHCarryFlag() == true);
-//     REQUIRE(cpu.getCarryFlag() == true);
-// }
+TEST_CASE("F register flags are accessible and initialized correctly") {
+    Emulator emu("Tetris.gb");
+    // Register F init to 0xB0 (0b10110000)
+    REQUIRE(emu.getCPU()->getZeroFlag() == true);
+    REQUIRE(emu.getCPU()->getSubFlag() == false);
+    REQUIRE(emu.getCPU()->getHCarryFlag() == true);
+    REQUIRE(emu.getCPU()->getCarryFlag() == true);
+}
 
 // TEST_CASE("Cartridge returns correctly for valid and invalid ROM files") {
 //     Cartridge cart1;
@@ -38,8 +37,8 @@
 // }
 
 TEST_CASE("Verify register access and write") {
-  Emulator emu("Tetris.gb");
-  emu.getCPU()->resetRegisters();
+    Emulator emu("Tetris.gb");
+    emu.getCPU()->resetRegisters();
     REQUIRE(emu.getCPU()->getAF() == 0x0000);
     REQUIRE(emu.getCPU()->getBC() == 0x0000);
     REQUIRE(emu.getCPU()->getDE() == 0x0000);
