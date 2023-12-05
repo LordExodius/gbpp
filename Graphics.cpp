@@ -16,7 +16,7 @@ void Graphics::setInitialDisplay() {
     // Read LCDC register for initial display configuration
     u8 u8lcdc = mmu->readByte(0xFF40);
     std::bitset<8> lcdc(u8lcdc);
-    printf("LCDC: %d\n", lcdc);
+    // printf("LCDC: %d\n", lcdc);
 
     // Determine visual area and window
     scrollY = mmu->readByte(0xFF42);
@@ -24,10 +24,10 @@ void Graphics::setInitialDisplay() {
     windowY = mmu->readByte(0xFF4A);
     windowX = mmu->readByte(0xFF4B) - 7;
 
-    printf("Window X: %d\n", windowX);
-    printf("Window Y: %d\n", windowY);
-    printf("Scroll X: %d\n", scrollX);
-    printf("Scroll Y: %d\n", scrollY);
+    // printf("Window X: %d\n", windowX);
+    // printf("Window Y: %d\n", windowY);
+    // printf("Scroll X: %d\n", scrollX);
+    // printf("Scroll Y: %d\n", scrollY);
 
     u8 yPosition = 0;
 
@@ -155,13 +155,13 @@ void Graphics::renderTiles() {
     // Update the texture with the entire pixelBuffer
     sf::IntRect updateRect(0, scanLineCounter, SCREEN_WIDTH, 1);
     texture.update(pixelBuffer.data(), SCREEN_WIDTH, 1, 0, scanLineCounter);
-    printf("Scanline counter: %d\n", scanLineCounter);
+    // printf("Scanline counter: %d\n", scanLineCounter);
 
-    printf("Pixel buffer data: ");
-    for (int i = 0; i < 10; ++i) {
-        printf("%u ", static_cast<unsigned int>(pixelBuffer[i]));
-    }
-    printf("\n");
+    // printf("Pixel buffer data: ");
+    // for (int i = 0; i < 10; ++i) {
+    //     printf("%u ", static_cast<unsigned int>(pixelBuffer[i]));
+    // }
+    // printf("\n");
 }
 
 void Graphics::renderSprites() {
@@ -227,8 +227,8 @@ sf::Uint8 Graphics::getPixelColor(u8 pixelValue) {
 
 void Graphics::updateArray(int cycles) {
     cycleCounter += cycles;
-    printf("Cycles param: %d\n", cycles);
-    printf("Cycle counter: %d\n", cycleCounter);
+    // printf("Cycles param: %d\n", cycles);
+    // printf("Cycle counter: %d\n", cycleCounter);
 
     // Reset cycle counter
     if (cycleCounter >= 456) {
@@ -240,7 +240,7 @@ void Graphics::updateArray(int cycles) {
 
         // Set interrupt flag
         if (scanLineCounter == 144) {
-            printf("Vblank\n");
+            // printf("Vblank\n");
             cpu->requestInterrupt(0x1);
 
         // Reset scanline counter

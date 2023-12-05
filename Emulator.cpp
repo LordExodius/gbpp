@@ -37,21 +37,29 @@ void Emulator::loop() {
         int cycles = cpu.executeInstruction(opCode);
 
         // print opcode and cycles
-        printf("PC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
-        logfile << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
+
+        if (PC == 0x20F) {
+            printf("\nPC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
+            cpu.dumpRegisters();
+            while (std::cin.get() != '\n');
+        }
+        
+        // logfile << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
 
         cpu.updateTimer(cycles);
+        // cpu.dumpRegisters();
         cyclesPassed += cycles;
-        while (std::cin.get() != '\n');
-        graphics->updateArray(cycles);
+        // graphics->updateArray(cycles);
         handleInterrupts();
+        // while (std::cin.get() != '\n');
     }
-    graphics->updateDisplay();
-    logfile.close();
+    // graphics->updateDisplay();
+    // logfile.close();
 }
 
 void Emulator::handleInterrupts() {
     if (!cpu.getIME()) {
+        // printf("IME is disabled\n");
         return;
     }
 
@@ -62,26 +70,32 @@ void Emulator::handleInterrupts() {
     
     switch (IF & IE) {
         case 0x1: { // VBlank
+            printf("VBlank interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xFE);
             cpu.setPC(0x40);
+            printf("PC: 0x%04X\n", cpu.getPC());
             break;
         }
         case 0x2: { // LCD
+            printf("LCD interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xFD);
             cpu.setPC(0x48);
             break;
         }
         case 0x4: { // Timer
+            printf("Timer interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xFB);
             cpu.setPC(0x50);
             break;
         }
         case 0x8: { // Serial
+            printf("Serial interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xF7);
             cpu.setPC(0x40);
             break;
         }
         case 0xF: { // Joypad
+            printf("Joypad interrupt\n");
             mmu.writeByte(0xFF0F, IF & 0xEF);
             cpu.setPC(0x60);
             break;
