@@ -55,17 +55,17 @@ public:
     ~CPU();
 
     // REGISTERS
-    u16 getSP();
+    Register getSP();
     void setSP(u16 value);
-    u16 getPC();
+    Register getPC();
     void setPC(u16 value);
-    u16 getAF();
+    Register getAF();
     void setAF(u16 value);
-    u16 getBC();
+    Register getBC();
     void setBC(u16 value);
-    u16 getDE();
+    Register getDE();
     void setDE(u16 value);
-    u16 getHL();
+    Register getHL();
     void setHL(u16 value);
     void resetRegisters();
 

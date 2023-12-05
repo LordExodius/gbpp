@@ -56,37 +56,37 @@ CPU::CPU(MMU *mmu)
 CPU::~CPU() {}
 
 // REGISTERS
-u16 CPU::getSP()
+Register CPU::getSP()
 {
-    return CPU::SP.getWord();
+    return CPU::SP;
 }
 void CPU::setSP(u16 value)
 {
     CPU::SP.setWord(value);
 }
-u16 CPU::getPC()
+Register CPU::getPC()
 {
-    return CPU::PC.getWord();
+    return CPU::PC;
 }
 void CPU::setPC(u16 value)
 {
     CPU::PC.setWord(value);
 }
-u16 CPU::getAF()
+Register CPU::getAF()
 {
-    return CPU::AF.getWord();
+    return CPU::AF;
 }
-u16 CPU::getBC()
+Register CPU::getBC()
 {
-    return CPU::BC.getWord();
+    return CPU::BC;
 }
-u16 CPU::getDE()
+Register CPU::getDE()
 {
-    return CPU::DE.getWord();
+    return CPU::DE;
 }
-u16 CPU::getHL()
+Register CPU::getHL()
 {
-    return CPU::HL.getWord();
+    return CPU::HL;
 }
 void CPU::setAF(u16 value)
 {

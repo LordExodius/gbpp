@@ -30,7 +30,7 @@ void Emulator::loop() {
     logfile.open("log.txt", std::ios::out);
     int cyclesPassed = 0;
     while (cyclesPassed < CYCLES_PER_FRAME) {
-        u16 PC = cpu.getPC();
+        u16 PC = cpu.getPC().getWord();
         logfile <<"PC 0x" << std::hex << PC;
 
         u8 opCode = cpu.getInstruction();
@@ -58,7 +58,7 @@ void Emulator::handleInterrupts() {
     cpu.setIME(false);
     u8 IF = mmu.readByte(0xFF0F);
     u8 IE = mmu.readByte(0xFFFF);
-    cpu.pushStackWord(cpu.getPC());
+    cpu.pushStackWord(cpu.getPC().getWord());
     
     switch (IF & IE) {
         case 0x1: { // VBlank
