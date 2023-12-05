@@ -11,6 +11,7 @@ u8 MMU::readByte(u16 location) {
 }
 
 void MMU::writeByte(u16 location, u8 byte) {
+    // printf("Writing byte %02X to location %04X\n", byte, location);
     if (location == 0xFF04) {
         memory[location] = 0x00;
     }

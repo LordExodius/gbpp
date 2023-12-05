@@ -30,7 +30,8 @@
 // }
 
 TEST_CASE("Run main gameplay loop") {
-    Emulator emu("cpu_instrs.gb");
+    Emulator emu("tests/06-ld r,r.gb");
+    emu.run();
     // while (true) {
     //     emu.loop();
     //     while (std::cin.get() != '\n');

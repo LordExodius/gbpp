@@ -6,7 +6,6 @@ Emulator::Emulator(const char *fileName): cartridge(fileName), mmu(&cartridge, f
     printf("Loading %s\n", fileName);
     cpu.dumpRegisters();
     window.create(sf::VideoMode(160, 144), "Gameboy Emulator");
-    run();
 }
 
 void Emulator::run() {
@@ -32,24 +31,30 @@ void Emulator::loop() {
     int cyclesPassed = 0;
     while (cyclesPassed < CYCLES_PER_FRAME) {
         u16 PC = cpu.getPC();
-        logfile <<"PC 0x" << std::hex << PC;
-        if (PC == 0x0216)
-            while (std::cin.get() != '\n');
+        // logfile <<"PC 0x" << std::hex << PC;
+            
         u8 opCode = cpu.getInstruction();
         int cycles = cpu.executeInstruction(opCode);
 
         // print opcode and cycles
-        // printf("\nPC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
-        logfile << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
+
+        if (PC == 0x20F) {
+            printf("\nPC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
+            cpu.dumpRegisters();
+            while (std::cin.get() != '\n');
+        }
+        
+        // logfile << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
 
         cpu.updateTimer(cycles);
         // cpu.dumpRegisters();
         cyclesPassed += cycles;
-        graphics->updateArray(cycles);
+        // graphics->updateArray(cycles);
         handleInterrupts();
+        // while (std::cin.get() != '\n');
     }
-    graphics->updateDisplay();
-    logfile.close();
+    // graphics->updateDisplay();
+    // logfile.close();
 }
 
 void Emulator::handleInterrupts() {
