@@ -7,8 +7,7 @@ Graphics::Graphics(MMU* mmu, CPU* cpu, sf::RenderWindow* window) {
     this->mmu = mmu;
     this->window = window; 
     this->window->setFramerateLimit(60); 
-    texture.create(SCREEN_WIDTH, SCREEN_HEIGHT);
-    sprite.setTexture(texture);
+    // texture.create(SCREEN_WIDTH, SCREEN_HEIGHT);
     setInitialDisplay();
 }
 
@@ -164,67 +163,6 @@ void Graphics::renderTiles() {
     // printf("\n");
 }
 
-void Graphics::renderSprites() {
-    for (int sprite = 0; sprite < 40; sprite++) {
-        u8 index = sprite * 4;
-        u8 yPos = mmu->readByte(0xFE00 + index) - 16;
-        u8 xPos = mmu->readByte(0xFE00 + index + 1) - 8;
-        u8 tileLocation = mmu->readByte(0xFE00 + index + 2);
-        u8 attributes = mmu->readByte(0xFE00 + index + 3);
-
-        bool yFlip = (attributes & (1 << 6)) != 0;
-        bool xFlip = (attributes & (1 << 5)) != 0;
-
-        u8 scanLine = mmu->readByte(0xFF44);
-
-        // Does sprite intercept with scanline?
-        if ((scanLine >= yPos) && (scanLine < (yPos + spriteSize))) {
-            int line = scanLine - yPos;
-
-            // Read sprite backwards if yFlip is set
-            if (yFlip) {
-                line -= spriteSize;
-                line *= -1;
-            }
-
-            line *= 2;
-            u16 dataAddress = (0x8000 + (tileLocation * 16)) + line;
-            u8 data1 = mmu->readByte(dataAddress);
-            u8 data2 = mmu->readByte(dataAddress + 1);
-
-            for (int tilePixel = 7; tilePixel >= 0; tilePixel--) {
-                int colorBit = tilePixel;
-
-                // Read sprite backwards if xFlip is set
-                if (xFlip) {
-                    colorBit -= 7;
-                    colorBit *= -1;
-                }
-
-                int colorNum = (data2 & (1 << colorBit)) >> colorBit;
-                colorNum <<= 1;
-                colorNum |= (data1 & (1 << colorBit)) >> colorBit;
-
-                // Get color from palette
-                u8 color = getPixelColor(colorNum);
-            }
-        }
-    }
-}
-
-sf::Uint8 Graphics::getPixelColor(u8 pixelValue) {
-    switch (pixelValue) {
-        case 0:
-            return 00; // White
-        case 1:
-            return 01; // Light grey
-        case 2:
-            return 10; // Dark grey
-        default:
-            return 11;   //  Black
-    }
-}
-
 void Graphics::updateArray(int cycles) {
     cycleCounter += cycles;
     // printf("Cycles param: %d\n", cycles);
@@ -250,14 +188,15 @@ void Graphics::updateArray(int cycles) {
         // Vdraw - update scanline array
         } else if (scanLineCounter < 144) {
             renderTiles();
-            updateDisplay();
+            // updateDisplay();
         }
     }
     return;
 }
 
 void Graphics::updateDisplay() {
-    renderTiles();
+    // renderTiles();
+    window->clear();
     window->draw(sprite);
     window->display();
 }
