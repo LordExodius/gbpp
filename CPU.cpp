@@ -72,6 +72,46 @@ void CPU::setPC(u16 value)
 {
     CPU::PC.setWord(value);
 }
+u16 CPU::getAF()
+{
+    return CPU::AF.getWord();
+}
+u16 CPU::getBC()
+{
+    return CPU::BC.getWord();
+}
+u16 CPU::getDE()
+{
+    return CPU::DE.getWord();
+}
+u16 CPU::getHL()
+{
+    return CPU::HL.getWord();
+}
+void CPU::setAF(u16 value)
+{
+    CPU::AF.setWord(value);
+}
+void CPU::setBC(u16 value)
+{
+    CPU::BC.setWord(value);
+}
+void CPU::setDE(u16 value)
+{
+    CPU::DE.setWord(value);
+}
+void CPU::setHL(u16 value)
+{
+    CPU::HL.setWord(value);
+}
+void CPU::resetRegisters(){
+    CPU::AF.setWord(0x00);
+    CPU::BC.setWord(0x00);
+    CPU::DE.setWord(0x00);
+    CPU::HL.setWord(0x00);
+    CPU::SP.setWord(0x00);
+    CPU::PC.setWord(0x00);
+}
 
 bool CPU::getIME()
 {
