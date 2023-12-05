@@ -18,7 +18,9 @@ void Emulator::run() {
     texture.loadFromFile("nintendo.png");
     sf::Sprite sprite(texture);
 
-    while (graphics->isOpen()) {
+    int counter = 0;
+    while (graphics->isOpen() && counter < 1) {
+        counter++;
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -29,6 +31,8 @@ void Emulator::run() {
         window.clear();
         window.draw(sprite);
         window.display();
+        while (std::cin.get() != '\n');
+        printf("Running loop\n");
         loop();
     }
 }
@@ -37,32 +41,35 @@ Emulator::~Emulator() {
 }
 
 void Emulator::loop() {
-    std::fstream logfile;
-    logfile.open("log.txt", std::ios::out);
+    // std::fstream logfile;
+    // logfile.open("log.txt", std::ios::out);
+    int counter = 0;
+
     int cyclesPassed = 0;
-    while (cyclesPassed < CYCLES_PER_FRAME) {
+    while (cyclesPassed < CYCLES_PER_FRAME && counter < 10) {
+        counter++;
         u16 PC = cpu.getPC().getWord();
-        logfile <<"PC 0x" << std::hex << PC;
+        // logfile <<"PC 0x" << std::hex << PC;
 
         u8 opCode = cpu.getInstruction();
         int cycles = cpu.executeInstruction(opCode);
 
         // print opcode and cycles
 
-        if (PC == 0x20F) {
-            printf("\nPC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
-            cpu.dumpRegisters();
-            while (std::cin.get() != '\n');
-        }
+        // if (PC == 0x20F) {
+        //     printf("\nPC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
+        //     cpu.dumpRegisters();
+        // }
         
         // logfile << " OPCODE: " << std::hex << (int)opCode << " CYCLES: " << cycles << "\n";
+        printf("\nPC: 0x%04X OPCODE: %02X CYCLES: %d\n", PC, opCode, cycles);
 
         cpu.updateTimer(cycles);
-        // cpu.dumpRegisters();
+        cpu.dumpRegisters();
         cyclesPassed += cycles;
         // graphics->updateArray(cycles);
         handleInterrupts();
-        // while (std::cin.get() != '\n');
+        while (std::cin.get() != '\n');
     }
     // graphics->updateDisplay();
     // logfile.close();

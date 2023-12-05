@@ -80,13 +80,10 @@ TEST_CASE("F register flags are accessible and initialized correctly") {
 //     REQUIRE(cart2.loadCartridge("GAJGLSDHGSHL") == false);
 // }
 
-// TEST_CASE("Run main gameplay loop") {
-//     Emulator emu("Tetris.gb");
-//     // while (true) {
-//     //     emu.loop();
-//     //     while (std::cin.get() != '\n');
-//     // }
-// }
+TEST_CASE("Run main gameplay loop") {
+    Emulator emu("Tetris.gb");
+    emu.run();
+}
 
 TEST_CASE("Verify register access and write") {
     Emulator emu("Tetris.gb");
@@ -123,7 +120,7 @@ TEST_CASE("CPU Instruction Tests") {
     emu.getCPU()->dumpRegisters();
 
     // Test carry flag
-    printf("Testing carry (Carry: true)\n");
+    printf("Testing carry (0x10 + 0xFF) (Carry: true)\n");
     emu.getCPU()->add_8(0xFF);
     REQUIRE(emu.getCPU()->getAF().higher == 0x0F);
     REQUIRE(emu.getCPU()->getCarryFlag() == true);
@@ -147,14 +144,14 @@ TEST_CASE("CPU Instruction Tests") {
     emu.getCPU()->dumpRegisters();
 
     // test or a
-    printf("Testing OR A\n");
+    printf("Testing OR A (0x3C OR 0x1D)\n");
     emu.getCPU()->add_8(0x3C);
     emu.getCPU()->or_a(0x1D);
     REQUIRE(emu.getCPU()->getAF().higher == 0x3D);
     emu.getCPU()->dumpRegisters();
 
     // test xor a
-    printf("Testing XOR A\n");
+    printf("Testing XOR A (0x3D XOR 0x34)\n");
     emu.getCPU()->xor_a(0x34);
     REQUIRE(emu.getCPU()->getAF().higher == 0x09);
     emu.getCPU()->dumpRegisters();
