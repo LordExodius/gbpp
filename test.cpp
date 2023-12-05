@@ -64,15 +64,14 @@ TEST_CASE("Input class tests") {
     }
 }
 
-// TEST_CASE("F register flags are accessible and initialized correctly") {
-//     MMU mmu;
-//     CPU cpu(&mmu);
-//     // Register F init to 0xB0 (0b10110000)
-//     REQUIRE(cpu.getZeroFlag() == true);
-//     REQUIRE(cpu.getSubFlag() == false);
-//     REQUIRE(cpu.getHCarryFlag() == true);
-//     REQUIRE(cpu.getCarryFlag() == true);
-// }
+TEST_CASE("F register flags are accessible and initialized correctly") {
+    Emulator emu("Tetris.gb");
+    // Register F init to 0xB0 (0b10110000)
+    REQUIRE(emu.getCPU()->getZeroFlag() == true);
+    REQUIRE(emu.getCPU()->getSubFlag() == false);
+    REQUIRE(emu.getCPU()->getHCarryFlag() == true);
+    REQUIRE(emu.getCPU()->getCarryFlag() == true);
+}
 
 // TEST_CASE("Cartridge returns correctly for valid and invalid ROM files") {
 //     Cartridge cart1;
@@ -81,12 +80,35 @@ TEST_CASE("Input class tests") {
 //     REQUIRE(cart2.loadCartridge("GAJGLSDHGSHL") == false);
 // }
 
-TEST_CASE("Run main gameplay loop") {
+// TEST_CASE("Run main gameplay loop") {
+//     Emulator emu("Tetris.gb");
+//     // while (true) {
+//     //     emu.loop();
+//     //     while (std::cin.get() != '\n');
+//     // }
+// }
+
+TEST_CASE("Verify register access and write") {
     Emulator emu("Tetris.gb");
-    // while (true) {
-    //     emu.loop();
-    //     while (std::cin.get() != '\n');
-    // }
+    emu.getCPU()->resetRegisters();
+    REQUIRE(emu.getCPU()->getAF() == 0x0000);
+    REQUIRE(emu.getCPU()->getBC() == 0x0000);
+    REQUIRE(emu.getCPU()->getDE() == 0x0000);
+    REQUIRE(emu.getCPU()->getHL() == 0x0000);
+    REQUIRE(emu.getCPU()->getSP() == 0x0000);
+    REQUIRE(emu.getCPU()->getPC() == 0x0000);
+    emu.getCPU()->setAF(0x1000);
+    REQUIRE(emu.getCPU()->getAF() == 0x1000);
+    emu.getCPU()->setBC(0x1100);
+    REQUIRE(emu.getCPU()->getBC() == 0x1100);
+    emu.getCPU()->setDE(0x1200);
+    REQUIRE(emu.getCPU()->getDE() == 0x1200);
+    emu.getCPU()->setHL(0x1300);
+    REQUIRE(emu.getCPU()->getHL() == 0x1300);
+    emu.getCPU()->setSP(0x1400);
+    REQUIRE(emu.getCPU()->getSP() == 0x1400);
+    emu.getCPU()->setPC(0x1500);
+    REQUIRE(emu.getCPU()->getPC() == 0x1500);
 }
 
 // TEST_CASE("Export memory to file") {

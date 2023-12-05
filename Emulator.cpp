@@ -6,7 +6,6 @@ Emulator::Emulator(const char *fileName): cartridge(fileName), mmu(&cartridge, f
     printf("Loading %s\n", fileName);
     cpu.dumpRegisters();
     window.create(sf::VideoMode(160, 144), "Gameboy Emulator");
-    run();
 }
 
 void Emulator::run() {
@@ -103,4 +102,8 @@ void Emulator::handleInterrupts() {
 
 u8 Emulator::readMemory(u16 addr) {
     return mmu.readByte(addr);
+}
+
+CPU* Emulator::getCPU() {
+    return &cpu;
 }

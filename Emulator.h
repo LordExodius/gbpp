@@ -71,6 +71,8 @@ public:
      * simulating the processing of instructions and handling various components.
      */
     void run();
+
+    CPU* getCPU();
 };
 
 #endif
