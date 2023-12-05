@@ -59,6 +59,15 @@ public:
     void setSP(u16 value);
     u16 getPC();
     void setPC(u16 value);
+    u16 getAF();
+    void setAF(u16 value);
+    u16 getBC();
+    void setBC(u16 value);
+    u16 getDE();
+    void setDE(u16 value);
+    u16 getHL();
+    void setHL(u16 value);
+    void resetRegisters();
 
     bool getIME();
     void setIME(bool value);

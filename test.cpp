@@ -29,12 +29,35 @@
 //     REQUIRE(cart2.loadCartridge("GAJGLSDHGSHL") == false);
 // }
 
-TEST_CASE("Run main gameplay loop") {
-    Emulator emu("Tetris.gb");
-    // while (true) {
-    //     emu.loop();
-    //     while (std::cin.get() != '\n');
-    // }
+// TEST_CASE("Run main gameplay loop") {
+//     Emulator emu("Tetris.gb");
+//     // while (true) {
+//     //     emu.loop();
+//     //     while (std::cin.get() != '\n');
+//     // }
+// }
+
+TEST_CASE("Verify register access and write") {
+  Emulator emu("Tetris.gb");
+  emu.getCPU()->resetRegisters();
+    REQUIRE(emu.getCPU()->getAF() == 0x0000);
+    REQUIRE(emu.getCPU()->getBC() == 0x0000);
+    REQUIRE(emu.getCPU()->getDE() == 0x0000);
+    REQUIRE(emu.getCPU()->getHL() == 0x0000);
+    REQUIRE(emu.getCPU()->getSP() == 0x0000);
+    REQUIRE(emu.getCPU()->getPC() == 0x0000);
+    emu.getCPU()->setAF(0x1000);
+    REQUIRE(emu.getCPU()->getAF() == 0x1000);
+    emu.getCPU()->setBC(0x1100);
+    REQUIRE(emu.getCPU()->getBC() == 0x1100);
+    emu.getCPU()->setDE(0x1200);
+    REQUIRE(emu.getCPU()->getDE() == 0x1200);
+    emu.getCPU()->setHL(0x1300);
+    REQUIRE(emu.getCPU()->getHL() == 0x1300);
+    emu.getCPU()->setSP(0x1400);
+    REQUIRE(emu.getCPU()->getSP() == 0x1400);
+    emu.getCPU()->setPC(0x1500);
+    REQUIRE(emu.getCPU()->getPC() == 0x1500);
 }
 
 // TEST_CASE("Export memory to file") {
