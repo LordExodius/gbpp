@@ -1,16 +1,68 @@
 #include <iostream>
-
+#include <fstream>
 #include "CPU.h"
 #include "MMU.h"
 #include "Cartridge.h"
 #include "Emulator.h"
 #include "Graphics.h"
-
-#include <fstream>
+#include "Input.h"
 
 // Unit Testing
 #define CONFIG_CATCH_MAIN
 #include "catch_amalgamated.hpp"
+
+TEST_CASE("Input class tests") {
+    Cartridge cartridge("Tetris.gb");
+    MMU mmu(&cartridge, "Tetris.gb");
+
+    SECTION("Pressing and releasing keys") {
+        Input input(mmu);
+
+        // Simulate key press for direction key
+        // "Select" button must be pressed while reading directional keys (lower nibble)
+        // Therefore button key state should be 14 (1110 in bitwise)
+        // and direction key state should be 13 (1101 in bitwise as 'a' maps to position 1)
+        input.pressKey('a');
+        REQUIRE(input.getButtonKeysState() == 14);
+        REQUIRE(input.getDirectionKeysState() == 13);
+
+        // Simulate key release 
+        // 15 in bitwise is 1111, so all keys are unpressed
+        input.releaseKey('a');
+        REQUIRE(input.getButtonKeysState() ==  15);
+        REQUIRE(input.getDirectionKeysState() == 15);
+
+        // Simulate key press for button key that is not mapped
+        // All keys should be unpressed
+        input.pressKey('-');
+        REQUIRE(input.getButtonKeysState() == 15);
+        REQUIRE(input.getDirectionKeysState() == 15);
+    }
+
+    SECTION("Check memory at 0xFF00") {
+        Input input(mmu);
+
+        // Simulate key press for a mapped key
+        // 222 in bitwise is 11011110, so all keys are unpressed except 'a'
+        input.pressKey('a');
+        REQUIRE(static_cast<int>(mmu.readByte(0xFF00)) == 222);
+
+        // Simulate key release
+        // 255 in bitwise is 11111111, so all keys are unpressed
+        input.releaseKey('a');
+        REQUIRE(static_cast<int>(mmu.readByte(0xFF00)) == 255);
+
+        // Simulate key press for an mapped key
+        input.pressKey('=');
+        REQUIRE(static_cast<int>(mmu.readByte(0xFF00)) == 255);
+
+        // Simulate release of the wrong key - should still be in "pressed" state
+        input.pressKey('a');
+        input.releaseKey('0');
+        REQUIRE(static_cast<int>(mmu.readByte(0xFF00)) == 222);
+
+    }
+}
 
 TEST_CASE("F register flags are accessible and initialized correctly") {
     Emulator emu("Tetris.gb");

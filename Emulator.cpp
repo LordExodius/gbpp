@@ -10,14 +10,25 @@ Emulator::Emulator(const char *fileName): cartridge(fileName), mmu(&cartridge, f
 
 void Emulator::run() {
     graphics = new Graphics(&mmu, &cpu, &window);
+
+    sf::Texture texture;
+    if (!texture.loadFromFile("nintendo.png")) {
+        std::cerr << "Failed to load texture from file." << std::endl;
+    }
+    texture.loadFromFile("nintendo.png");
+    sf::Sprite sprite(texture);
+
     while (graphics->isOpen()) {
         sf::Event event;
-
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
         }
+
+        window.clear();
+        window.draw(sprite);
+        window.display();
         loop();
     }
 }

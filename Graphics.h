@@ -62,14 +62,6 @@ class Graphics {
         MMU* mmu; ///< A pointer to the MMU object
 
         /**
-         * @brief Get the Pixel color
-         * 
-         * @param pixelValue An u8 value representing the pixel
-         * @return sf::Uint8 The pixel color (white, light grey, dark grey, black)
-         */
-        sf::Uint8 getPixelColor(u8 pixelValue);
-
-        /**
          * @brief Set the Initial Display based on the settings specified in the LCD Control Register
          */
         void setInitialDisplay();
@@ -78,11 +70,6 @@ class Graphics {
          * @brief Calculating the tile of the background graphics
          */
         void renderTiles();
-
-        /**
-         * @brief Calculates the position, display, and color of the sprite graphics
-         */
-        void renderSprites();
 };
 
 #endif
