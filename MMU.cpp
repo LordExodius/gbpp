@@ -1,7 +1,9 @@
 #include "MMU.h"
+#include <cstring>
 
-MMU::MMU() {
-
+MMU::MMU(Cartridge *cartridge, std::string gameFile) {
+    // Load ROM file into memory
+    std::memcpy(memory, cartridge->getGameData(), cartridge->getFileSize(gameFile));
 }
 
 u8 MMU::readByte(u16 location) {
@@ -9,10 +11,17 @@ u8 MMU::readByte(u16 location) {
 }
 
 void MMU::writeByte(u16 location, u8 byte) {
-    if (location == 0xFF04)
-        memory[location] = 0x00;
-    else
+    // if (location == 0xFF04) {
+    //     memory[location] = 0x00;
+    // }
+    if ((location >= 0xE000) && (location < 0xFE00)) {
+        writeByte(location - 0x2000, byte);
         memory[location] = byte;
+    }
+    else if ((location >= 0xFEA0) && (location < 0xFEFF)) {}
+    else {
+        memory[location] = byte;
+    }
 }
 
 u16 MMU::readWord(u16 location) {
